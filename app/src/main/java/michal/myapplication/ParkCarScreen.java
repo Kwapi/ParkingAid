@@ -115,7 +115,6 @@ public class ParkCarScreen extends AppCompatActivity{
         parkedCar.setNotes(notes);
         parkedCar.setParkTime(timeParked);
 
-
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
