@@ -19,6 +19,5 @@ public abstract class GpsManager{
      */
     public abstract GpsTag getCurrentGpsLocation(String name);
 
-    public abstract boolean isConnected();
 
 }

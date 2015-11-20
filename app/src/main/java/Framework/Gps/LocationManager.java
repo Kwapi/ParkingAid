@@ -56,5 +56,4 @@ public class LocationManager {
         return storedLocations.getGpsTag(name);
     }
 
-    public boolean
 }

@@ -15,7 +15,7 @@ public class ParkedCar {
     private ParkedCar(){
     }
 
-    private static ParkedCar getInstance(){
+    public static ParkedCar getInstance(){
         if(instance!=null){
             return instance;
         }else{

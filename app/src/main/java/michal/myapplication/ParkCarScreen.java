@@ -41,7 +41,7 @@ public class ParkCarScreen extends AppCompatActivity{
 
 
     private GpsTag              currentLocation;
-    private LocationManager     locationManager;
+    private AndroidGpsManager     gpsManager;
 
 
     public void updateLocation(){
@@ -76,8 +76,8 @@ public class ParkCarScreen extends AppCompatActivity{
         saveCarLocButton =      (Button)    findViewById(R.id.saveCarLocButton);
 
         //initialise GPSManager - start listening for location
-        gpsManager = new LocationManager(this);
-        gpsManager.setUp(this);
+        gpsManager = new AndroidGpsManager(this);
+
 
 
         //UI ACTIONS
@@ -98,13 +98,17 @@ public class ParkCarScreen extends AppCompatActivity{
     }
 
     public void parkCar(){
+        //get info from forms
         int desiredDuration  = Integer.parseInt(desiredDurationEdit.getText().toString());
         String notes = notesEdit.getText().toString();
         boolean openDayMode = openDayModeCheckbox.isChecked();
+
+
+        //set timeParked to current time
         GregorianCalendar timeParked = new GregorianCalendar();
 
-        //TODO: PARKED CAR MANAGER IS NULL
-        ParkedCar parkedCar = parkedCarManager.getInstance();
+
+        ParkedCar parkedCar = ParkedCar.getInstance();
 
         parkedCar.setDesiredDuration(desiredDuration);
         parkedCar.setOpenDayMode(openDayMode);
