@@ -10,7 +10,7 @@ import android.content.Context;
  * @author George Hatt
  */
 public class LocationManager {
-    private GpsTagTree storedLocations;
+    private static GpsTagTree storedLocations;
     private GpsManager gm;
     
     
@@ -52,8 +52,12 @@ public class LocationManager {
      * @param name
      * @return
      */
-    public GpsTag getStoredLocation(String name){
+    public static GpsTag getStoredLocation(String name){
         return storedLocations.getGpsTag(name);
+    }
+
+    public boolean isReady(){
+        return gm.isConnected();
     }
 
 }

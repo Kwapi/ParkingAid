@@ -10,7 +10,7 @@ package Framework.Gps;
 public class GpsTag {
     private double longitude,latitude;
     private String name;
-    
+
     public GpsTag(String name, double longitude, double latitude){
         this.name = name;
         this.longitude = longitude;

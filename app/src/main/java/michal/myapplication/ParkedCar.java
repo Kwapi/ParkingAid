@@ -1,15 +1,21 @@
 package michal.myapplication;
 
+import com.google.android.gms.location.LocationRequestCreator;
+
 import java.util.GregorianCalendar;
+
+import Framework.Gps.GpsTag;
+import Framework.Gps.LocationManager;
 
 
 public class ParkedCar {
-
+    public static final String TAG = ParkedCar.class.getSimpleName();
     private static ParkedCar instance = null;
     private String notes;
     private boolean openDayMode;
     private GregorianCalendar parkTime;
     private int desiredDuration;
+
 
 
     private ParkedCar(){
@@ -52,6 +58,10 @@ public class ParkedCar {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public GpsTag getLocation(){
+        return LocationManager.getStoredLocation("parkedCarLocation");
     }
 }
 

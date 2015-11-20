@@ -41,13 +41,15 @@ public class ParkCarScreen extends AppCompatActivity{
 
 
     private GpsTag              currentLocation;
-    private AndroidGpsManager     gpsManager;
+    private LocationManager     locationManager;
 
 
     public void updateLocation(){
         // wait for the gpsManager to be connected
-         if(gpsManager.isConnected()) {
-            currentLocation = gpsManager.getCurrentGpsLocation("car");
+         if(locationManager.isReady()) {
+
+             //adding a name because of the framework specification
+            currentLocation = locationManager.getCurrentLocation("parkedCarLocation");
 
             mLatitudeText.setText(String.valueOf(currentLocation.getLatitude()));
             mLongitudeText.setText(String.valueOf(currentLocation.getLongitude()));
@@ -76,7 +78,7 @@ public class ParkCarScreen extends AppCompatActivity{
         saveCarLocButton =      (Button)    findViewById(R.id.saveCarLocButton);
 
         //initialise GPSManager - start listening for location
-        gpsManager = new AndroidGpsManager(this);
+        locationManager = new LocationManager(this);
 
 
 
@@ -99,6 +101,7 @@ public class ParkCarScreen extends AppCompatActivity{
 
     public void parkCar(){
         //get info from forms
+        //TODO: input-check
         int desiredDuration  = Integer.parseInt(desiredDurationEdit.getText().toString());
         String notes = notesEdit.getText().toString();
         boolean openDayMode = openDayModeCheckbox.isChecked();
@@ -114,6 +117,11 @@ public class ParkCarScreen extends AppCompatActivity{
         parkedCar.setOpenDayMode(openDayMode);
         parkedCar.setNotes(notes);
         parkedCar.setParkTime(timeParked);
+
+        locationManager.storeGpsLocation("parkedCarLocation",currentLocation);
+
+        Intent intent = new Intent(this, OverviewScreen.class);
+        startActivity(intent);
 
     }
     @Override
