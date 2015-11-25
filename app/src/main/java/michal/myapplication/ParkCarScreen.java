@@ -1,6 +1,7 @@
 package michal.myapplication;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -19,16 +20,26 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import Framework.Gps.AndroidGpsManager;
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 
-public class ParkCarScreen extends AppCompatActivity{
+public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallback {
     public static final String TAG = ParkCarScreen.class.getSimpleName();
     //UI ELEMENTS
     private TextView    mLatitudeText;
@@ -38,12 +49,21 @@ public class ParkCarScreen extends AppCompatActivity{
     private Button      updateLocationButton;
     private CheckBox    openDayModeCheckbox;
     private Button      saveCarLocButton;
-
+    private GoogleMap   mMap;
 
     private GpsTag              currentLocation;
     private LocationManager     locationManager;
 
+    public void updateMarker(GpsTag location){
+        mMap.clear();
 
+        LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.addMarker(new MarkerOptions().
+                position(currentPosition)
+                .title("You are here"));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 20.0f));
+    }
     public void updateLocation(){
         // wait for the gpsManager to be connected
          if(locationManager.isReady()) {
@@ -53,6 +73,10 @@ public class ParkCarScreen extends AppCompatActivity{
 
             mLatitudeText.setText(String.valueOf(currentLocation.getLatitude()));
             mLongitudeText.setText(String.valueOf(currentLocation.getLongitude()));
+
+             updateMarker(currentLocation);
+
+
         }else{
             Log.i(TAG,"GPSmanager is still not connected");
         }
@@ -96,6 +120,12 @@ public class ParkCarScreen extends AppCompatActivity{
                 parkCar();
             }
         });
+
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
     }
 
@@ -144,5 +174,58 @@ public class ParkCarScreen extends AppCompatActivity{
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void handleGetDirectionsResult(ArrayList<LatLng> directionPoints)
+    {
+        Polyline newPolyline;
+        GoogleMap mMap = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+        PolylineOptions rectLine = new PolylineOptions().width(3).color(Color.RED);
+
+        for(int i = 0 ; i < directionPoints.size() ; i++)
+        {
+            rectLine.add(directionPoints.get(i));
+        }
+        newPolyline = mMap.addPolyline(rectLine);
+    }
+
+
+    public void findDirections(double fromPositionDoubleLat, double fromPositionDoubleLong, double toPositionDoubleLat, double toPositionDoubleLong, String mode)
+    {
+        Map<String, String> map = new HashMap<String, String>();
+        map.put(GetDirectionsAsyncTask.USER_CURRENT_LAT, String.valueOf(fromPositionDoubleLat));
+        map.put(GetDirectionsAsyncTask.USER_CURRENT_LONG, String.valueOf(fromPositionDoubleLong));
+        map.put(GetDirectionsAsyncTask.DESTINATION_LAT, String.valueOf(toPositionDoubleLat));
+        map.put(GetDirectionsAsyncTask.DESTINATION_LONG, String.valueOf(toPositionDoubleLong));
+        map.put(GetDirectionsAsyncTask.DIRECTIONS_MODE, mode);
+
+        GetDirectionsAsyncTask asyncTask = new GetDirectionsAsyncTask(this);
+        asyncTask.execute(map);
+    }
+
+
+
+
+
+
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
