@@ -89,7 +89,7 @@ public class AndroidGpsManager extends GpsManager implements
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.i(TAG, "Location Changed");
+        Log.i(TAG, "Location Changed : " + location.getLatitude() + ", " + location.getLongitude());
         currentLocation = location;
         connected = true;
     }
