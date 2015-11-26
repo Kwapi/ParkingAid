@@ -38,18 +38,9 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="michal.myapplication.ParkCarScreen" />
-        </activity>
-        <activity
-            android:name=".ShowLocationActivity"
-            android:label="@string/title_activity_show_location"
+            android:name=".OverviewScreen"
+            android:label="@string/title_activity_overview_screen"
             android:theme="@style/AppTheme.NoActionBar" >
-        </activity>
-        <activity android:name=".OverviewScreen" >
         </activity>
     </application>
 

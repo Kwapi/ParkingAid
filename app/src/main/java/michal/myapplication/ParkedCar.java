@@ -2,13 +2,17 @@ package michal.myapplication;
 
 import com.google.android.gms.location.LocationRequestCreator;
 
+import java.io.Serializable;
 import java.util.GregorianCalendar;
 
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 
 
-public class ParkedCar {
+public class ParkedCar implements Serializable{
+
+    static final long serialVersionUID = 1L;
+
     public static final String TAG = ParkedCar.class.getSimpleName();
     private static ParkedCar instance = null;
     private String notes;
@@ -62,6 +66,20 @@ public class ParkedCar {
 
     public GpsTag getLocation(){
         return LocationManager.getStoredLocation("parkedCarLocation");
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Location:\t" + getLocation().getLatitude() + ", " + getLocation().getLongitude());
+        sb.append("\n");
+        sb.append("Parking time:\t" + parkTime.toString());
+        sb.append("\n");
+        sb.append("Desired duration:\t" + desiredDuration);
+        sb.append("\n");
+        sb.append("Notes:\t"+ notes);
+
+        return sb.toString();
     }
 }
 

@@ -3,11 +3,8 @@ package michal.myapplication;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -17,14 +14,9 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,23 +27,20 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import Framework.Gps.AndroidGpsManager;
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 
 public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallback {
+
     public static final String TAG = ParkCarScreen.class.getSimpleName();
+    private String              myApiKey ="AIzaSyDjMCLbxy0wmqr1SbuMDo8W7SRn8flWIqw";
+
     //UI ELEMENTS
-    private TextView    mLatitudeText;
-    private TextView    mLongitudeText;
     private EditText    desiredDurationEdit;
     private EditText    notesEdit;
     private Button      updateLocationButton;
@@ -60,40 +49,20 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
     private Button      drawRouteButton;
     private GoogleMap   mMap;
 
-    private String              myApiKeyAndroid = "AIzaSyB26JPWBGzgScsIp2eYbVh6yp0PBvcpL4k";
-    private String              myApiKey ="AIzaSyDjMCLbxy0wmqr1SbuMDo8W7SRn8flWIqw";
+
 
     private GpsTag              currentLocation;
     private GpsTag              parkingLocation;
     private LocationManager     locationManager;
 
 
-    //http://stackoverflow.com/questions/14702621/answer-draw-path-between-two-points-using-google-maps-android-api-v2
-    //TODO: implementing now
 
-    //http://javapapers.com/android/draw-path-on-google-maps-android-api/
-    //TODO: to implement if the above one does not work
 
     public void drawRoute(GpsTag from, GpsTag to){
-        /*GMapV2Direction md = new GMapV2Direction();
-
-        LatLng fromLatLng = new LatLng(from.getLatitude(),from.getLatitude());
-        LatLng toLatLng = new LatLng(to.getLatitude(),to.getLatitude());
-        Document doc = md.getDocument(fromLatLng, toLatLng,
-                GMapV2Direction.MODE_WALKING);
-
-        ArrayList<LatLng> directionPoint = md.getDirection(doc);
-        PolylineOptions rectLine = new PolylineOptions().width(3).color(
-                Color.RED);
-
-        for (int i = 0; i < directionPoint.size(); i++) {
-            rectLine.add(directionPoint.get(i));
-        }
-        Polyline polylin = mMap.addPolyline(rectLine);
-        */
+        //make url request to google directions api
         String url = makeURL(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
 
-        connectAsyncTask task = new connectAsyncTask(url);
+        drawPathAsyncTask task = new drawPathAsyncTask(url);
         task.execute();
     }
 
@@ -137,8 +106,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
 
         //WIRE UI ELEMENTS
-        //mLatitudeText =         (TextView)  findViewById(R.id.latitudeText);
-        //mLongitudeText =        (TextView)  findViewById(R.id.longitudeText);
         desiredDurationEdit =   (EditText)  findViewById(R.id.desDurEdit);
         notesEdit =             (EditText)  findViewById(R.id.notesEdit);
         updateLocationButton =  (Button)    findViewById(R.id.updateLocation);
@@ -188,7 +155,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         String notes = notesEdit.getText().toString();
         boolean openDayMode = openDayModeCheckbox.isChecked();
 
-
         //set timeParked to current time
         GregorianCalendar timeParked = new GregorianCalendar();
 
@@ -202,7 +168,13 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
         locationManager.storeGpsLocation("parkedCarLocation", currentLocation);
 
+
+
         Intent intent = new Intent(this, OverviewScreen.class);
+        Bundle b = new Bundle();
+        b.putSerializable("parkedCar",parkedCar);
+        intent.putExtras(b);
+
         startActivity(intent);
 
     }
@@ -229,39 +201,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
     }
 
 
-    public void handleGetDirectionsResult(ArrayList<LatLng> directionPoints)
-    {
-        Polyline newPolyline;
-        GoogleMap mMap = ((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-        PolylineOptions rectLine = new PolylineOptions().width(3).color(Color.RED);
-
-        for(int i = 0 ; i < directionPoints.size() ; i++)
-        {
-            rectLine.add(directionPoints.get(i));
-        }
-        newPolyline = mMap.addPolyline(rectLine);
-    }
-
-
-    public void findDirections(double fromPositionDoubleLat, double fromPositionDoubleLong, double toPositionDoubleLat, double toPositionDoubleLong, String mode)
-    {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(GetDirectionsAsyncTask.USER_CURRENT_LAT, String.valueOf(fromPositionDoubleLat));
-        map.put(GetDirectionsAsyncTask.USER_CURRENT_LONG, String.valueOf(fromPositionDoubleLong));
-        map.put(GetDirectionsAsyncTask.DESTINATION_LAT, String.valueOf(toPositionDoubleLat));
-        map.put(GetDirectionsAsyncTask.DESTINATION_LONG, String.valueOf(toPositionDoubleLong));
-        map.put(GetDirectionsAsyncTask.DIRECTIONS_MODE, mode);
-
-        GetDirectionsAsyncTask asyncTask = new GetDirectionsAsyncTask(this);
-        asyncTask.execute(map);
-    }
-
-
-
-
-
-
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -285,9 +224,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
 
 
-    /*NEW METHODS TO TEST*/
-
-
     public String makeURL (double sourcelat, double sourcelog, double destlat, double destlog ){
         StringBuilder urlString = new StringBuilder();
         urlString.append("https://maps.googleapis.com/maps/api/directions/json");
@@ -306,7 +242,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         urlString.append(myApiKey);
         return urlString.toString();
     }
-
 
     public void drawPath(String  result) {
 
@@ -340,15 +275,15 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private class connectAsyncTask extends AsyncTask<Void, Void, String> {
+    private class drawPathAsyncTask extends AsyncTask<Void, Void, String> {
         private ProgressDialog progressDialog;
         String url;
-        connectAsyncTask(String urlPass){
+        drawPathAsyncTask(String urlPass){
             url = urlPass;
         }
+
         @Override
         protected void onPreExecute() {
-            // TODO Auto-generated method stub
             super.onPreExecute();
             progressDialog = new ProgressDialog(ParkCarScreen.this);
             progressDialog.setMessage("Fetching route, Please wait...");
