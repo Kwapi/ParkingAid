@@ -65,12 +65,23 @@ public class AndroidGpsManager extends GpsManager implements
         GpsTag result = null;
 
         if(currentLocation!=null){
-            result = new GpsTag(name, currentLocation.getLongitude(), currentLocation.getLatitude());
+            result = new GpsTag(name, currentLocation.getLatitude(),currentLocation.getLongitude(), currentLocation.getAltitude());
         }else{
             Log.e(TAG,"LOCATION IS NULL");
         }
 
         return result;
+    }
+
+    public Location getCurrentLocation(){
+
+        if(currentLocation!=null){
+            return currentLocation;
+        }else{
+            Log.e(TAG,"LOCATION IS NULL");
+
+            return null;
+        }
     }
 
 

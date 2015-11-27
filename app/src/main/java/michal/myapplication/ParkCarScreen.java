@@ -1,8 +1,14 @@
 package michal.myapplication;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.GeomagneticField;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +25,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -35,10 +42,11 @@ import java.util.List;
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 
-public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallback {
+public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
 
     public static final String TAG = ParkCarScreen.class.getSimpleName();
     private String              myApiKey ="AIzaSyDjMCLbxy0wmqr1SbuMDo8W7SRn8flWIqw";
+
 
     //UI ELEMENTS
     private EditText    desiredDurationEdit;
@@ -47,14 +55,22 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
     private CheckBox    openDayModeCheckbox;
     private Button      saveCarLocButton;
     private Button      drawRouteButton;
+    private Button      compassButton;
+
     private GoogleMap   mMap;
 
+    private float[] mRotationMatrix = new float[16];
+    private double mDeclination;
+
+
+    //
+    //http://stackoverflow.com/questions/14320015/android-maps-auto-rotate
 
 
     private GpsTag              currentLocation;
     private GpsTag              parkingLocation;
     private LocationManager     locationManager;
-
+    private SensorManager       sensorManager;
 
 
 
@@ -64,6 +80,31 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
         drawPathAsyncTask task = new drawPathAsyncTask(url);
         task.execute();
+    }
+
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    public void onSensorChanged(SensorEvent event) {
+
+        if(event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            SensorManager.getRotationMatrixFromVector(
+                    mRotationMatrix, event.values);
+            float[] orientation = new float[3];
+            SensorManager.getOrientation(mRotationMatrix, orientation);
+            float bearing = (float) (Math.toDegrees(orientation[0]) + mDeclination);
+            updateCamera(bearing);
+        }
+    }
+
+    private void updateCamera(float bearing) {
+        CameraPosition oldPos = mMap.getCameraPosition();
+
+        CameraPosition pos = CameraPosition.builder(oldPos).bearing(bearing).build();
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
     }
 
 
@@ -77,15 +118,25 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
     }
+
     public void updateLocation(){
+
         // wait for the gpsManager to be connected
          if(locationManager.isReady()) {
 
              //adding a name because of the framework specification
             currentLocation = locationManager.getCurrentLocation("parkedCarLocation");
 
-            //mLatitudeText.setText(String.valueOf(currentLocation.getLatitude()));
-            //mLongitudeText.setText(String.valueOf(currentLocation.getLongitude()));
+             //FOR COMPASS
+             GeomagneticField field = new GeomagneticField(
+                     (float)currentLocation.getLatitude(),
+                     (float)currentLocation.getLongitude(),
+                     (float)currentLocation.getAltitude(),
+                     System.currentTimeMillis()
+             );
+
+             // getDeclination returns degrees
+             mDeclination = field.getDeclination();
 
              updateMarker(currentLocation);
 
@@ -95,14 +146,15 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_park_car_screen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_GAME);
 
 
         //WIRE UI ELEMENTS
@@ -112,11 +164,12 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         openDayModeCheckbox =   (CheckBox)  findViewById(R.id.openDayCheckbox);
         saveCarLocButton =      (Button)    findViewById(R.id.saveCarLocButton);
         drawRouteButton =       (Button)    findViewById(R.id.drawRouteButton);
+        compassButton =         (Button)    findViewById(R.id.compassButton);
 
         //initialise GPSManager - start listening for location
         locationManager = new LocationManager(this);
 
-        parkingLocation = new GpsTag("parkingLocation", 1.241826,52.623247);
+        parkingLocation = new GpsTag("parkingLocation",52.623247,1.241826,29);
 
 
 
@@ -135,11 +188,20 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
             }
         });
 
+        compassButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), CompassExample.class);
+                startActivity(intent);
+            }
+        });
+
         drawRouteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 drawRoute(currentLocation,parkingLocation);
             }
         });
+
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -200,7 +262,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         return super.onOptionsItemSelected(item);
     }
 
-
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -213,16 +274,8 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        //mMap.setMyLocationEnabled(true);
-
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        updateLocation();
     }
-
-
 
     public String makeURL (double sourcelat, double sourcelog, double destlat, double destlog ){
         StringBuilder urlString = new StringBuilder();
@@ -258,17 +311,11 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
                             .width(12)
                             .color(Color.parseColor("#05b1fb"))//Google maps blue color
                             .geodesic(true)
+
+
+
             );
-           /*
-           for(int z = 0; z<list.size()-1;z++){
-                LatLng src= list.get(z);
-                LatLng dest= list.get(z+1);
-                Polyline line = mMap.addPolyline(new PolylineOptions()
-                .add(new LatLng(src.latitude, src.longitude), new LatLng(dest.latitude,   dest.longitude))
-                .width(2)
-                .color(Color.BLUE).geodesic(true));
-            }
-           */
+
         }
         catch (JSONException e) {
 

@@ -8,13 +8,21 @@ package Framework.Gps;
  * @author George Hatt
  */
 public class GpsTag {
-    private double longitude,latitude;
+    private double longitude,latitude,altitude;
     private String name;
 
-    public GpsTag(String name, double longitude, double latitude){
+    public GpsTag(String name, double latitude, double longitude, double altitude){
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.altitude = altitude;
+    }
+
+    public GpsTag(String name, double latitude, double longitude){
+        this.name = name;
+        this.longitude = longitude;
+        this.latitude = latitude;
+
     }
     
     /**
@@ -31,6 +39,14 @@ public class GpsTag {
      */
     public double getLatitude() {
         return latitude;
+    }
+
+    public double getAltitude() {
+        return altitude;
+    }
+
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
     }
 
     /**

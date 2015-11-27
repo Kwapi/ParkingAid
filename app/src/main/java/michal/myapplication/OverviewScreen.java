@@ -18,15 +18,17 @@ public class OverviewScreen extends AppCompatActivity {
         @Override
         protected void onCreate(Bundle savedInstanceState) {
 
-            parkedCarString = (TextView) findViewById(R.id.parkedCarString);
 
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_overview_screen);
 
+
+            parkedCarString = (TextView) findViewById(R.id.parkedCarString);
+
             Bundle b = this.getIntent().getExtras();
 
 
-            //todo: fix the parkedCarString null
+           
             if(b !=null){
                 parkedCar = (ParkedCar) b.getSerializable("parkedCar");
 
