@@ -63,25 +63,10 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
     private float[] mRotationMatrix = new float[16];
     private double mDeclination;
 
-
-    //
-    //http://stackoverflow.com/questions/14320015/android-maps-auto-rotate
-
-
     private GpsTag              currentLocation;
     private GpsTag              parkingLocation;
     private LocationManager     locationManager;
     private SensorManager       sensorManager;
-
-
-
-    public void drawRoute(GpsTag from, GpsTag to){
-        //make url request to google directions api
-        String url = makeURL(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
-
-        drawPathAsyncTask task = new drawPathAsyncTask(url);
-        task.execute();
-    }
 
 
     @Override
@@ -237,7 +222,7 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
         Intent intent = new Intent(this, OverviewScreen.class);
         Bundle b = new Bundle();
-        b.putSerializable("parkedCar",parkedCar);
+        b.putSerializable("parkedCar", parkedCar);
         intent.putExtras(b);
 
         startActivity(intent);
@@ -280,6 +265,19 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         mMap.setMyLocationEnabled(true);
 
         updateLocation();
+    }
+
+
+
+    /* ALREADY IN THE FRAMEWORK NOW
+
+
+    public void drawRoute(GpsTag from, GpsTag to){
+        //make url request to google directions api
+        String url = makeURL(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
+
+        drawPathAsyncTask task = new drawPathAsyncTask(url);
+        task.execute();
     }
 
     public String makeURL (double sourcelat, double sourcelog, double destlat, double destlog ){
@@ -388,6 +386,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
         return poly;
     }
-
+   */
 
 }

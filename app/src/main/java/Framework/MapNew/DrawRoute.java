@@ -25,9 +25,18 @@ import Framework.Gps.GpsTag;
  */
 public class DrawRoute{
 
+    //TODO:
+    //might need to be replaced - has to be tested if it works on multiple apps
     private static String              myApiKey ="AIzaSyDjMCLbxy0wmqr1SbuMDo8W7SRn8flWIqw";
 
-
+    /**
+     * Call this method to generate and overlay a path onto the provided map
+     *
+     * @param from
+     * @param to
+     * @param map
+     * @param context
+     */
     public static void drawRoute(GpsTag from, GpsTag to, GoogleMap map,Context context ){
 
         //make url request to google directions api
@@ -37,7 +46,9 @@ public class DrawRoute{
         task.execute();
     }
 
-    public static String makeURL (double sourcelat, double sourcelog, double destlat, double destlog ){
+
+
+    private static String makeURL (double sourcelat, double sourcelog, double destlat, double destlog ){
         StringBuilder urlString = new StringBuilder();
         urlString.append("https://maps.googleapis.com/maps/api/directions/json");
         urlString.append("?origin=");// from
@@ -56,7 +67,7 @@ public class DrawRoute{
         return urlString.toString();
     }
 
-    public static void overlayPolylines(String  result, GoogleMap map) {
+    private static void overlayPolylines(String  result, GoogleMap map) {
 
         try {
             //Tranform the string into a json object

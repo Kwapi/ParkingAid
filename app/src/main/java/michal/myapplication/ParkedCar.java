@@ -78,6 +78,7 @@ public class ParkedCar implements Serializable{
         sb.append("Desired duration:\t" + desiredDuration);
         sb.append("\n");
         sb.append("Notes:\t"+ notes);
+        sb.append("Open day mode: \t" + openDayMode);
 
         return sb.toString();
     }
