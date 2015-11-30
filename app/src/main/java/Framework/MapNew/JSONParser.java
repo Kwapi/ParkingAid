@@ -1,4 +1,4 @@
-package michal.myapplication;
+package Framework.MapNew;
 
 import android.util.Log;
 

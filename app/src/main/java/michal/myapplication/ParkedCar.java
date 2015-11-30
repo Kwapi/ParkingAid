@@ -73,7 +73,7 @@ public class ParkedCar implements Serializable{
 
         sb.append("Location:\t" + getLocation().getLatitude() + ", " + getLocation().getLongitude());
         sb.append("\n");
-        sb.append("Parking time:\t" + parkTime.toString());
+        sb.append("Parking time:\t" + parkTime.getTime().toString());
         sb.append("\n");
         sb.append("Desired duration:\t" + desiredDuration);
         sb.append("\n");

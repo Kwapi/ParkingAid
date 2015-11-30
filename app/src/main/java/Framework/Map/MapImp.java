@@ -1,5 +1,7 @@
 package Framework.Map;
 
+import com.google.android.gms.maps.SupportMapFragment;
+
 import Framework.Gps.GpsManager;
 import Framework.Gps.GpsTag;
 

@@ -1,7 +1,6 @@
 package michal.myapplication;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.GeomagneticField;
@@ -41,6 +40,8 @@ import java.util.List;
 
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
+import Framework.MapNew.DrawRoute;
+import Framework.MapNew.JSONParser;
 
 public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
 
@@ -112,10 +113,10 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         mMap.clear();
 
         LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.addMarker(new MarkerOptions().
+        /*mMap.addMarker(new MarkerOptions().
                 position(currentPosition)
                 .title("You are here"));
-
+        */
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
     }
 
@@ -197,7 +198,11 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
         drawRouteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                /*
+                WORKING VERSION - NON FRAMEWORK
                 drawRoute(currentLocation,parkingLocation);
+                */
+                DrawRoute.drawRoute(currentLocation, parkingLocation,mMap, getApplicationContext());
             }
         });
 
@@ -229,8 +234,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
         parkedCar.setParkTime(timeParked);
 
         locationManager.storeGpsLocation("parkedCarLocation", currentLocation);
-
-
 
         Intent intent = new Intent(this, OverviewScreen.class);
         Bundle b = new Bundle();
@@ -274,6 +277,8 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMyLocationEnabled(true);
+
         updateLocation();
     }
 
@@ -311,9 +316,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
                             .width(12)
                             .color(Color.parseColor("#05b1fb"))//Google maps blue color
                             .geodesic(true)
-
-
-
             );
 
         }
@@ -386,4 +388,6 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
         return poly;
     }
+
+
 }
