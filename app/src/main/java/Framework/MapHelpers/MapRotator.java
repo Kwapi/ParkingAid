@@ -1,4 +1,4 @@
-package Framework.MapNew;
+package Framework.MapHelpers;
 
 import android.content.Context;
 import android.hardware.GeomagneticField;
@@ -16,7 +16,7 @@ import Framework.Gps.GpsTag;
 /**
  * Created by Michal on 30/11/2015.
  */
-public class MapRotate implements SensorEventListener {
+public class MapRotator implements SensorEventListener {
     private float[] rotationMatrix = new float[16];
     private double declination = 0;
     private GoogleMap map;
@@ -24,7 +24,7 @@ public class MapRotate implements SensorEventListener {
     private SensorManager       sensorManager;
 
 
-    public MapRotate(Context context, GoogleMap map){
+    public MapRotator(Context context, GoogleMap map){
         this.context = context;
         this.map = map;
 

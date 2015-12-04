@@ -1,4 +1,4 @@
-package Framework.MapNew;
+package Framework.MapHelpers;
 
 import android.app.ProgressDialog;
 import android.content.Context;

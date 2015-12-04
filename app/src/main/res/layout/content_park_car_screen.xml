@@ -39,7 +39,6 @@
             android:layout_height="41dp"
             android:text="UPDATE LOCATION"
             android:id="@+id/updateLocation"
-            android:onClick="openShowLocationActivity"
             android:layout_below="@+id/button"
             android:layout_alignParentRight="true"
             android:layout_row="0"
@@ -96,13 +95,6 @@
             android:layout_column="0"
             android:checked="false" />
 
-        <Button
-            android:layout_width="155dp"
-            android:layout_height="70dp"
-            android:text="COMPASS"
-            android:id="@+id/compassButton"
-            android:layout_row="4"
-            android:layout_column="1" />
     </GridLayout>
 
 </RelativeLayout>
