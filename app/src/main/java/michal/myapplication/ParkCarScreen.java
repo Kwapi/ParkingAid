@@ -1,14 +1,11 @@
 package michal.myapplication;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,22 +23,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 import Framework.MapNew.DrawRoute;
-import Framework.MapNew.JSONParser;
 
 public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
 
@@ -58,10 +45,10 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
     private Button      drawRouteButton;
     private Button      compassButton;
 
-    private GoogleMap   mMap;
+    private GoogleMap map;
 
-    private float[] mRotationMatrix = new float[16];
-    private double mDeclination;
+    private float[] rotationMatrix = new float[16];
+    private double declination;
 
     private GpsTag              currentLocation;
     private GpsTag              parkingLocation;
@@ -78,31 +65,31 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
 
         if(event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
             SensorManager.getRotationMatrixFromVector(
-                    mRotationMatrix, event.values);
+                    rotationMatrix, event.values);
             float[] orientation = new float[3];
-            SensorManager.getOrientation(mRotationMatrix, orientation);
-            float bearing = (float) (Math.toDegrees(orientation[0]) + mDeclination);
+            SensorManager.getOrientation(rotationMatrix, orientation);
+            float bearing = (float) (Math.toDegrees(orientation[0]) + declination);
             updateCamera(bearing);
         }
     }
 
     private void updateCamera(float bearing) {
-        CameraPosition oldPos = mMap.getCameraPosition();
+        CameraPosition oldPos = map.getCameraPosition();
 
         CameraPosition pos = CameraPosition.builder(oldPos).bearing(bearing).build();
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
     }
 
 
     public void updateMarker(GpsTag location){
-        mMap.clear();
+        map.clear();
 
         LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-        /*mMap.addMarker(new MarkerOptions().
+        /*map.addMarker(new MarkerOptions().
                 position(currentPosition)
                 .title("You are here"));
         */
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
     }
 
     public void updateLocation(){
@@ -122,7 +109,7 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
              );
 
              // getDeclination returns degrees
-             mDeclination = field.getDeclination();
+             declination = field.getDeclination();
 
              updateMarker(currentLocation);
 
@@ -187,7 +174,7 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
                 WORKING VERSION - NON FRAMEWORK
                 drawRoute(currentLocation,parkingLocation);
                 */
-                DrawRoute.drawRoute(currentLocation, parkingLocation,mMap, getApplicationContext());
+                DrawRoute.drawRoute(currentLocation, parkingLocation, map, getApplicationContext());
             }
         });
 
@@ -261,8 +248,8 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.setMyLocationEnabled(true);
+        map = googleMap;
+        map.setMyLocationEnabled(true);
 
         updateLocation();
     }
@@ -309,7 +296,7 @@ public class ParkCarScreen extends AppCompatActivity implements OnMapReadyCallba
             JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
             String encodedString = overviewPolylines.getString("points");
             List<LatLng> list = decodePoly(encodedString);
-            Polyline line = mMap.addPolyline(new PolylineOptions()
+            Polyline line = map.addPolyline(new PolylineOptions()
                             .addAll(list)
                             .width(12)
                             .color(Color.parseColor("#05b1fb"))//Google maps blue color
