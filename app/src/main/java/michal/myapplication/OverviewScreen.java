@@ -65,10 +65,15 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         if(locationManager.isReady()) {
 
             //adding a name because of the framework specification
-            currentLocation = locationManager.getCurrentLocation("parkedCarLocation");
+            GpsTag newLocation = locationManager.getCurrentLocation("parkedCarLocation");
 
-            mapRotator.updateDeclination(currentLocation);
-            updateMarker(currentLocation);
+
+            //only update when location changes
+            if(!GpsTag.isSameLocation(currentLocation,newLocation)){
+                currentLocation = newLocation;
+                mapRotator.updateDeclination(currentLocation);
+                updateMarker(currentLocation);
+            }
 
         }else{
             Log.i(TAG, "GPSmanager is still not connected");
@@ -113,12 +118,11 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         mapFragment.getMapAsync(this);
 
 
-        final int delay = 1000; //milliseconds
+        final int delay = 3000; //milliseconds
 
         h.postDelayed(new Runnable() {
             public void run() {
                 //do something
-                Log.i(TAG,"locationUpdated");
                 updateLocation();
                 h.postDelayed(this, delay);
 

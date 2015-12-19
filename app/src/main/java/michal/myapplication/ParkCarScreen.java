@@ -69,10 +69,13 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
          if(locationManager.isReady()) {
 
              //adding a name because of the framework specification
-             currentLocation = locationManager.getCurrentLocation("parkedCarLocation");
+             GpsTag newLocation = locationManager.getCurrentLocation("parkedCarLocation");
 
-             mapRotator.updateDeclination(currentLocation);
-             updateMarker(currentLocation);
+             if(!GpsTag.isSameLocation(currentLocation,newLocation)){
+                 currentLocation = newLocation;
+                 mapRotator.updateDeclination(currentLocation);
+                 updateMarker(currentLocation);
+             }
 
 
         }else{

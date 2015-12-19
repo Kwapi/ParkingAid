@@ -61,5 +61,20 @@ public class GpsTag {
     public String toString(){
         return name +": "+longitude+","+latitude;
     }
-    
+
+    public static boolean isSameLocation(GpsTag gpsTagOne, GpsTag gpsTagTwo){
+
+        if(gpsTagOne == null || gpsTagTwo == null){
+            return false;
+        }
+
+        if(gpsTagOne.getLatitude() != gpsTagTwo.getLatitude()){
+            return false;
+        }
+        if(gpsTagOne.getLongitude() != gpsTagTwo.getLongitude()){
+            return false;
+        }
+
+        return true;
+    }
 }
