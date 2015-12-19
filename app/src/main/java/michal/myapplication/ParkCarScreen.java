@@ -97,13 +97,14 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         openDayModeCheckbox =   (CheckBox)  findViewById(R.id.openDayCheckbox);
         saveCarLocButton =      (Button)    findViewById(R.id.saveCarLocButton);
         drawRouteButton =       (Button)    findViewById(R.id.drawRouteButton);
-
+        Button  navigateToCar = (Button)    findViewById(R.id.navigateToCar);
 
         //initialise GPSManager - start listening for location
         locationManager = LocationManager.getInstance(this);
 
         //hardcoded parking location for testing purposes
-        parkingLocation = new GpsTag("parkingLocation",52.623247,1.241826,29);
+        //parkingLocation = new GpsTag("parkingLocation",52.623247,1.241826,29);
+        parkingLocation = new GpsTag("parkingLocation",51.258505, 15.569409);
 
 
         //UI ACTIONS
@@ -127,6 +128,14 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
             }
         });
 
+        //test
+        navigateToCar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), NavigateToCarScreen.class);
+
+                startActivity(i);
+            }
+        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -155,7 +164,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         parkedCar.setNotes(notes);
         parkedCar.setParkTime(timeParked);
 
-        locationManager.storeGpsLocation("parkedCarLocation", currentLocation);
+        locationManager.storeGpsLocation("parkedCarLocation", parkingLocation);
 
         Intent intent = new Intent(this, OverviewScreen.class);
         Bundle b = new Bundle();
@@ -197,4 +206,6 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         mapRotator = new MapRotator(this,map);
         updateLocation();
     }
+
+
 }

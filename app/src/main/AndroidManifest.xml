@@ -46,6 +46,13 @@
             android:theme="@style/AppTheme.NoActionBar" >
 
         </activity>
+
+        <activity
+            android:name=".NavigateToCarScreen"
+            android:label="@string/title_navigate_to_car_screen"
+            android:theme="@style/AppTheme.NoActionBar" >
+
+        </activity>
     </application>
 
 </manifest>

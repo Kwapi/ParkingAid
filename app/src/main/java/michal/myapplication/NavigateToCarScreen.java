@@ -1,19 +1,14 @@
 package michal.myapplication;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,16 +17,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.GregorianCalendar;
-
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 import Framework.MapHelpers.DrawRoute;
 import Framework.MapHelpers.MapRotator;
+import michal.myapplication.Utilities.AlertDialogues;
 
-public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallback {
+public class NavigateToCarScreen extends AppCompatActivity implements OnMapReadyCallback {
 
-    public static final String TAG = OverviewScreen.class.getSimpleName();
+    public static final String TAG = NavigateToCarScreen.class.getSimpleName();
 
     private ParkedCar parkedCar;
 
@@ -39,8 +33,6 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
     //UI ELEMENTS
 
     private Button      navigateToCarButton;
-    private TextView parkedCarString;
-
     private GoogleMap map;
     private GpsTag currentLocation;
     private GpsTag parkingLocation;
@@ -72,7 +64,13 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
             if(!GpsTag.isSameLocation(currentLocation,newLocation)){
                 currentLocation = newLocation;
                 mapRotator.updateDeclination(currentLocation);
+
+                if(parkingLocation!=null){
+                    DrawRoute.drawRoute(currentLocation, parkingLocation, map, getApplicationContext());
+                }
                 updateMarker(currentLocation);
+            }else{
+                Log.i(TAG, "Location hasn't changed");
             }
 
         }else{
@@ -83,94 +81,44 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_overview_screen);
-
+        setContentView(R.layout.activity_navigate_to_car_screen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        parkedCarString = (TextView) findViewById(R.id.parkedCarString);
 
+        // GET MAP
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        //  get the ParkedCar from previous activity
         Bundle b = this.getIntent().getExtras();
-
-
-
         if(b !=null){
             parkedCar = (ParkedCar) b.getSerializable("parkedCar");
 
-            parkedCarString.setText(parkedCar.toString());
+            parkingLocation = parkedCar.getLocation();
+        }else{
+            Log.e(TAG, "No parkedCar from previous activity was persisted");
+            AlertDialogues.getNoCarSavedBackToParkCarScreen(this).show();
         }
 
-        //WIRE UI ELEMENTS
 
-        navigateToCarButton =      (Button)    findViewById(R.id.navigateToCarButton);
-
-
-
-        //initialise GPSManager - start listening for location
+        //  initialise GPSManager - start listening for location
         locationManager = LocationManager.getInstance(this);
 
-
-        //UI ACTIONS
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-
-        mapFragment.getMapAsync(this);
-
-
+        //  check if there's a location update every 3 seconds
         final int delay = 3000; //milliseconds
-
         h.postDelayed(new Runnable() {
             public void run() {
                 //do something
                 updateLocation();
                 h.postDelayed(this, delay);
-
             }
         }, delay);
 
 
-        navigateToCarButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                navigateToCar();
-            }
-        });
-
-
     }
 
-    public void navigateToCar(){
-        Bundle b = new Bundle();
-        Intent intent = new Intent(this, NavigateToCarScreen.class);
-        b.putSerializable("parkedCar", parkedCar);
-        intent.putExtras(b);
-        startActivity(intent);
-    }
-
-
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_park_car_screen, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-    */
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
