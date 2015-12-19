@@ -10,11 +10,12 @@ import android.content.Context;
  * @author George Hatt
  */
 public class LocationManager {
+    private static LocationManager instance;
     private static GpsTagTree storedLocations;
-    private GpsManager gm;
+    private static GpsManager gm;
     
     
-    public LocationManager(Object object){
+    private LocationManager(Object object){
         // initilise the tag tree
         storedLocations = new GpsTagTree();
         // detect os version
@@ -26,6 +27,13 @@ public class LocationManager {
                 gm = new AndroidGpsManager((Context)object);
                 break;
         }
+    }
+
+    public static LocationManager getInstance(Object object){
+        if(instance==null){
+            instance = new LocationManager(object);
+        }
+        return instance;
     }
     
     /**

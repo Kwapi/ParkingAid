@@ -15,6 +15,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import java.util.Observable;
+
 /**
  *
  * @author George Hatt/Michal Zak
@@ -24,7 +26,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 public class AndroidGpsManager extends GpsManager implements
         LocationListener,
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener
+    {
 
 
     private Context context;
@@ -130,4 +133,8 @@ public class AndroidGpsManager extends GpsManager implements
     public boolean isConnected(){
         return connected;
     }
+
+
+
+
 }

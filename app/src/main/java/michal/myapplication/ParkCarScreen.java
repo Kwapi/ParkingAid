@@ -17,6 +17,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.GregorianCalendar;
 
@@ -29,7 +30,7 @@ import Framework.MapHelpers.MapRotator;
 public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallback{
 
     public static final String TAG = ParkCarScreen.class.getSimpleName();
-    private String              myApiKey ="AIzaSyDjMCLbxy0wmqr1SbuMDo8W7SRn8flWIqw";
+
 
 
     //UI ELEMENTS
@@ -53,12 +54,14 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     public void updateMarker(GpsTag location){
         map.clear();
         LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-        /*map.addMarker(new MarkerOptions().
+        map.addMarker(new MarkerOptions().
                 position(currentPosition)
                 .title("You are here"));
-        */
+
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
     }
+
+
 
     public void updateLocation(){
 
@@ -94,7 +97,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
 
         //initialise GPSManager - start listening for location
-        locationManager = new LocationManager(this);
+        locationManager = LocationManager.getInstance(this);
 
         //hardcoded parking location for testing purposes
         parkingLocation = new GpsTag("parkingLocation",52.623247,1.241826,29);
@@ -185,7 +188,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        map.setMyLocationEnabled(true);
+        //map.setMyLocationEnabled(true);
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);

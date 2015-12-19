@@ -24,7 +24,7 @@
         android:layout_height="300dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/map"
-        android:layout_alignParentEnd="false">
+        android:layout_alignEnd="@+id/map">
 
         <Button
             android:layout_width="wrap_content"
@@ -97,4 +97,7 @@
 
     </GridLayout>
 
+
 </RelativeLayout>
+
+

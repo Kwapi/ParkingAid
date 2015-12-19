@@ -6,6 +6,8 @@ package Framework.Gps;
 
 import android.app.Service;
 
+import java.util.Observable;
+
 /**
  *
  * @author George Hatt
