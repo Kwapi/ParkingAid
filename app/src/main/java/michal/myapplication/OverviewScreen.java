@@ -176,6 +176,7 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMyLocationEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);

@@ -16,6 +16,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
@@ -44,10 +45,7 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     public void updateMarker(GpsTag location){
         map.clear();
         LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-        /*map.addMarker(new MarkerOptions().
-                position(currentPosition)
-                .title("You are here"));
-        */
+
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
     }
 
@@ -97,26 +95,24 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
             parkedCar = (ParkedCar) b.getSerializable("parkedCar");
 
             parkingLocation = parkedCar.getLocation();
+
+            //  initialise GPSManager - start listening for location
+            locationManager = LocationManager.getInstance(this);
+
+            //  check if there's a location update every 3 seconds
+            final int delay = 3000; //milliseconds
+            h.postDelayed(new Runnable() {
+                public void run() {
+                    //do something
+                    updateLocation();
+                    h.postDelayed(this, delay);
+                }
+            }, delay);
+
         }else{
             Log.e(TAG, "No parkedCar from previous activity was persisted");
             AlertDialogues.getNoCarSavedBackToParkCarScreen(this).show();
         }
-
-
-        //  initialise GPSManager - start listening for location
-        locationManager = LocationManager.getInstance(this);
-
-        //  check if there's a location update every 3 seconds
-        final int delay = 3000; //milliseconds
-        h.postDelayed(new Runnable() {
-            public void run() {
-                //do something
-                updateLocation();
-                h.postDelayed(this, delay);
-            }
-        }, delay);
-
-
     }
 
 
@@ -124,6 +120,7 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMyLocationEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);
