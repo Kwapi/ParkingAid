@@ -80,16 +80,21 @@ public class DrawRoute{
             String encodedString = overviewPolylines.getString("points");
             List<LatLng> list = decodePoly(encodedString);
 
-            //clear the map from the previously drawn polyline
-            if(line!=null){
-                line.remove();
-            }
+
+
+            Polyline line_old = line;
+
             line = map.addPolyline(new PolylineOptions()
                             .addAll(list)
                             .width(12)
                             .color(Color.parseColor("#05b1fb"))//Google maps blue color
                             .geodesic(true)
             );
+
+            //clear the map from the previously drawn polyline
+            if(line_old!=null){
+                line_old.remove();
+            }
 
         }
         catch (JSONException e) {

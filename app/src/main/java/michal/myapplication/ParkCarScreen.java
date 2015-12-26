@@ -26,7 +26,7 @@ import Framework.Gps.LocationManager;
 import Framework.MapHelpers.DrawRoute;
 
 import Framework.MapHelpers.MapRotator;
-import michal.myapplication.Utilities.Utils;
+import Framework.MapHelpers.Utils;
 
 public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallback{
 
@@ -73,6 +73,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
              //adding a name because of the framework specification
              GpsTag newLocation = locationManager.getCurrentLocation("parkedCarLocation");
 
+             //only update location if it's different to the one we've already got
              if(!GpsTag.isSameLocation(currentLocation,newLocation)){
                  currentLocation = newLocation;
                  mapRotator.updateDeclination(currentLocation);
@@ -180,7 +181,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_park_car_screen, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
 
@@ -192,8 +193,10 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.select_map_type) {
+            if(map!=null) {
+                Utils.getMapTypeSelectorDialog(map, ParkCarScreen.this).show();
+            }
         }
 
         return super.onOptionsItemSelected(item);

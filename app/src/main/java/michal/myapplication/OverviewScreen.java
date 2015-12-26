@@ -3,8 +3,6 @@ package michal.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,8 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,12 +18,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.GregorianCalendar;
-
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
-import Framework.MapHelpers.DrawRoute;
 import Framework.MapHelpers.MapRotator;
+import Framework.MapHelpers.Utils;
 
 public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -148,29 +142,26 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
     }
 
 
-    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_park_car_screen, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.select_map_type) {
+
+            if(map!=null) {
+                Utils.getMapTypeSelectorDialog(map, OverviewScreen.this).show();
+            }
         }
 
         return super.onOptionsItemSelected(item);
     }
-    */
 
     @Override
     public void onMapReady(GoogleMap googleMap) {

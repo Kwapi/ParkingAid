@@ -5,6 +5,9 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -15,18 +18,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.w3c.dom.Text;
 
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 import Framework.MapHelpers.DrawRoute;
 import Framework.MapHelpers.MapRotator;
 import michal.myapplication.Utilities.AlertDialogues;
-import michal.myapplication.Utilities.Utils;
+import Framework.MapHelpers.Utils;
 
 public class NavigateToCarScreen extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -39,7 +40,6 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     private Switch navigationModeSwitch;
     private TextView    notesContent;
 
-
     private boolean navigationMode = true;
 
     private GoogleMap map;
@@ -51,9 +51,19 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
 
 
     public void updateMapDisplay(){
-        //map.clear();
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Utils.toLatLng(currentLocation), 20.0f));
+        if(currentLocation!=null) {
+
+            map.moveCamera(CameraUpdateFactory.newCameraPosition(
+                            new CameraPosition.Builder()
+                                    .target(Utils.toLatLng(currentLocation))
+                                    .tilt(60)
+                                    .zoom(20.0f)
+                                    .build())
+            );
+
+
+        }
     }
 
     public void updateLocation(){
@@ -96,7 +106,6 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         //  WIRE UI ELEMENTS
         navigationModeSwitch = (Switch) findViewById(R.id.navigationModeSwitch);
         notesContent = (TextView)   findViewById(R.id.notesContent);
-
 
         navigationModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -142,26 +151,20 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         }
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
-
-        changeToNavigationMode();
-
         map.addMarker(new MarkerOptions().position(Utils.toLatLng(parkingLocation)));
-
-
-
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);
-        updateLocation();
-    }
 
+        updateLocation();
+        changeToNavigationMode();
+    }
 
     public void changeToNavigationMode(){
         map.getUiSettings().setRotateGesturesEnabled(false);
@@ -178,15 +181,53 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     }
 
     public void changeToFreeViewMode(){
-        map.getUiSettings().setRotateGesturesEnabled(true);
+        map.getUiSettings().setRotateGesturesEnabled(false);
 
         map.getUiSettings().setScrollGesturesEnabled(true);
         map.getUiSettings().setZoomGesturesEnabled(true);
 
         navigationMode = false;
 
-        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
-        map.animateCamera(zoom);
+
+        if(currentLocation!=null && parkingLocation!=null) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+            builder.include(Utils.toLatLng(currentLocation));
+            builder.include(Utils.toLatLng(parkingLocation));
+
+            LatLngBounds bounds = builder.build();
+            int padding = 150;
+
+            CameraUpdate fitZoom = CameraUpdateFactory.newLatLngBounds(bounds,padding);
+
+            map.moveCamera(fitZoom);
+
+        }else {
+            CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+            map.moveCamera(zoom);
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.select_map_type) {
+
+            if(map!=null) {
+                Utils.getMapTypeSelectorDialog(map, NavigateToCarScreen.this).show();
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

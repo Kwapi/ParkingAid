@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import michal.myapplication.ParkCarScreen;
 
 /**
@@ -33,5 +35,6 @@ public class AlertDialogues {
         Intent intent = new Intent(context,ParkCarScreen.class);
         context.startActivity(intent);
     }
+
 
 }
