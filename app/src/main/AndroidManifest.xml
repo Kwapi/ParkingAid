@@ -42,11 +42,16 @@
         <activity
             android:name=".OverviewScreen"
             android:label="@string/title_activity_overview_screen"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".NavigateToCarScreen"
             android:label="@string/title_navigate_to_car_screen"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>
