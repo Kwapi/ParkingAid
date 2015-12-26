@@ -11,7 +11,7 @@ public class Utils {
 
 
 
-    static LatLng toLatLng(GpsTag gpsTag){
+    public static LatLng toLatLng(GpsTag gpsTag){
 
         return new LatLng(gpsTag.getLatitude(),gpsTag.getLongitude());
 

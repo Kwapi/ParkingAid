@@ -1,28 +1,32 @@
 package michal.myapplication;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.w3c.dom.Text;
 
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 import Framework.MapHelpers.DrawRoute;
 import Framework.MapHelpers.MapRotator;
 import michal.myapplication.Utilities.AlertDialogues;
+import michal.myapplication.Utilities.Utils;
 
 public class NavigateToCarScreen extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -32,8 +36,12 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
 
 
     //UI ELEMENTS
+    private Switch navigationModeSwitch;
+    private TextView    notesContent;
 
-    private Button      navigateToCarButton;
+
+    private boolean navigationMode = true;
+
     private GoogleMap map;
     private GpsTag currentLocation;
     private GpsTag parkingLocation;
@@ -42,11 +50,10 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     final Handler h = new Handler();
 
 
-    public void updateMarker(GpsTag location){
-        map.clear();
-        LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+    public void updateMapDisplay(){
+        //map.clear();
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Utils.toLatLng(currentLocation), 20.0f));
     }
 
     public void updateLocation(){
@@ -66,7 +73,10 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
                 if(parkingLocation!=null){
                     DrawRoute.drawRoute(currentLocation, parkingLocation, map, getApplicationContext());
                 }
-                updateMarker(currentLocation);
+
+                if(navigationMode) {
+                    updateMapDisplay();
+                }
             }else{
                 Log.i(TAG, "Location hasn't changed");
             }
@@ -83,11 +93,21 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //  WIRE UI ELEMENTS
+        navigationModeSwitch = (Switch) findViewById(R.id.navigationModeSwitch);
+        notesContent = (TextView)   findViewById(R.id.notesContent);
 
-        // GET MAP
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
+        navigationModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    changeToNavigationMode();
+                }else{
+                    changeToFreeViewMode();
+                }
+            }
+        });
+
 
         //  get the ParkedCar from previous activity
         Bundle b = this.getIntent().getExtras();
@@ -95,9 +115,16 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
             parkedCar = (ParkedCar) b.getSerializable("parkedCar");
 
             parkingLocation = parkedCar.getLocation();
+            notesContent.setText(parkedCar.getNotes());
 
             //  initialise GPSManager - start listening for location
             locationManager = LocationManager.getInstance(this);
+
+
+            // GET MAP
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
 
             //  check if there's a location update every 3 seconds
             final int delay = 3000; //milliseconds
@@ -122,9 +149,44 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
+
+        changeToNavigationMode();
+
+        map.addMarker(new MarkerOptions().position(Utils.toLatLng(parkingLocation)));
+
+
+
+
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);
         updateLocation();
+    }
+
+
+    public void changeToNavigationMode(){
+        map.getUiSettings().setRotateGesturesEnabled(false);
+        map.getUiSettings().setTiltGesturesEnabled(false);
+        map.getUiSettings().setScrollGesturesEnabled(false);
+        map.getUiSettings().setZoomGesturesEnabled(false);
+        map.getUiSettings().setZoomControlsEnabled(false);
+
+        navigationMode = true;
+
+        //force map update
+        updateMapDisplay();
+
+    }
+
+    public void changeToFreeViewMode(){
+        map.getUiSettings().setRotateGesturesEnabled(true);
+
+        map.getUiSettings().setScrollGesturesEnabled(true);
+        map.getUiSettings().setZoomGesturesEnabled(true);
+
+        navigationMode = false;
+
+        CameraUpdate zoom=CameraUpdateFactory.zoomTo(15);
+        map.animateCamera(zoom);
     }
 
 }

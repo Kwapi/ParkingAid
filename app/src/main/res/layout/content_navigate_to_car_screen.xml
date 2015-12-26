@@ -20,29 +20,37 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Navigation mode"
+        android:id="@+id/navigationModeSwitch"
+        android:layout_below="@+id/map"
+        android:layout_alignParentEnd="true"
+        android:checked="true"
+        android:layout_alignStart="@+id/map" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Notes"
+        android:id="@+id/notesLabel"
+        android:layout_below="@+id/navigationModeSwitch"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/map">
+        android:layout_alignEnd="@+id/navigationModeSwitch"
+        android:gravity="center_horizontal" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="NOTES"
-            android:id="@+id/notesLabel"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="sdsadsadsadsaddas"
-            android:id="@+id/notesContent"
-            android:layout_gravity="center" />
-
-    </FrameLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="There are no notes to display"
+        android:id="@+id/notesContent"
+        android:layout_below="@+id/notesLabel"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

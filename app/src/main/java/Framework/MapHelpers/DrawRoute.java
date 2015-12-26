@@ -25,6 +25,8 @@ import Framework.Gps.GpsTag;
  */
 public class DrawRoute{
 
+
+    private static Polyline line;
     //TODO:
     //might need to be replaced - has to be tested if it works on multiple apps
     private static String              myApiKey ="AIzaSyDjMCLbxy0wmqr1SbuMDo8W7SRn8flWIqw";
@@ -77,7 +79,12 @@ public class DrawRoute{
             JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
             String encodedString = overviewPolylines.getString("points");
             List<LatLng> list = decodePoly(encodedString);
-            Polyline line = map.addPolyline(new PolylineOptions()
+
+            //clear the map from the previously drawn polyline
+            if(line!=null){
+                line.remove();
+            }
+            line = map.addPolyline(new PolylineOptions()
                             .addAll(list)
                             .width(12)
                             .color(Color.parseColor("#05b1fb"))//Google maps blue color

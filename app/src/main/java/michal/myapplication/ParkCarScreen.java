@@ -26,6 +26,7 @@ import Framework.Gps.LocationManager;
 import Framework.MapHelpers.DrawRoute;
 
 import Framework.MapHelpers.MapRotator;
+import michal.myapplication.Utilities.Utils;
 
 public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallback{
 
@@ -53,7 +54,8 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
     public void updateMarker(GpsTag location){
         map.clear();
-        LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+        LatLng currentPosition = Utils.toLatLng(location);
+
         map.addMarker(new MarkerOptions().
                 position(currentPosition)
                 .title("You are here"));
@@ -108,6 +110,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
 
         //UI ACTIONS
+
         //update location when 'UPDATE LOCATION' button is clicked
         updateLocationButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
