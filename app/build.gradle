@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "michal.myapplication"
         minSdkVersion 19
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -20,18 +20,18 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile files('C:/Users/Michal/Documents/GitHub/ParkingAid/libs/httpcore.jar')
     compile files('C:/Users/Michal/Documents/GitHub/ParkingAid/libs/commons-httpclient-3.1.jar')
     compile files('C:/Users/Michal/Documents/GitHub/ParkingAid/libs/httpclient-4.0.3.jar')
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
-    compile 'com.google.android.gms:play-services:8.1.0'
+    compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.maps.android:android-maps-utils:0.3.+'
-    compile 'com.google.android.gms:play-services-ads:8.1.0'
+    compile 'com.google.android.gms:play-services-ads:8.4.0'
     compile 'com.google.android.gms:play-services-identity:8.1.0'
     compile 'com.google.android.gms:play-services-gcm:8.1.0'
-    compile files('C:/Users/Piotr/Documents/GitHub/ParkingAid/libs/httpclient-4.0.3.jar')
-    compile files('C:/Users/Piotr/Documents/GitHub/ParkingAid/libs/httpcore.jar')
+    compile files('D:/GitHub/ParkingAid/libs/httpclient-4.0.3.jar')
+    compile files('D:/GitHub/ParkingAid/libs/httpcore.jar')
 }

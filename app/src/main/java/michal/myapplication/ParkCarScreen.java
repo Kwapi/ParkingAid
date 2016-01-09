@@ -2,6 +2,7 @@ package michal.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -47,7 +48,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     private GpsTag              parkingLocation;
     private LocationManager     locationManager;
     private MapRotator          mapRotator;
-
+    final Handler h = new Handler();
 
 
 
@@ -106,8 +107,8 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         locationManager = LocationManager.getInstance(this);
 
         //hardcoded parking location for testing purposes
-        //parkingLocation = new GpsTag("parkingLocation",52.623247,1.241826,29);
-        parkingLocation = new GpsTag("parkingLocation",51.258505, 15.569409);
+        parkingLocation = new GpsTag("parkingLocation",52.623247,1.241826,29);
+
 
 
         //UI ACTIONS
@@ -146,6 +147,8 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
+
 
 
     }
@@ -187,12 +190,9 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.select_map_type) {
             if(map!=null) {
                 Utils.getMapTypeSelectorDialog(map, ParkCarScreen.this).show();
@@ -210,7 +210,22 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);
-        updateLocation();
+
+
+        final int delay = 2000; //milliseconds
+
+        // hack - we know it takes a bit of time
+        // for the gpsManager to be ready
+        // wait 2 seconds and then try to updateLocation
+        h.postDelayed(new Runnable() {
+            public void run() {
+                //do something
+                updateLocation();
+                h.postDelayed(this, delay);
+
+            }
+        }, delay);
+
     }
 
 
