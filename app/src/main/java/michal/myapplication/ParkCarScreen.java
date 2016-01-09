@@ -40,7 +40,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     private EditText    notesEdit;
     private Button      updateLocationButton;
     private CheckBox    openDayModeCheckbox;
-    private Button      saveCarLocButton;
+    private Button parkCarButton;
     private Button      drawRouteButton;
 
     private GoogleMap map;
@@ -97,11 +97,9 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         //WIRE UI ELEMENTS
         desiredDurationEdit =   (EditText)  findViewById(R.id.desDurEdit);
         notesEdit =             (EditText)  findViewById(R.id.notesEdit);
-        updateLocationButton =  (Button)    findViewById(R.id.updateLocation);
         openDayModeCheckbox =   (CheckBox)  findViewById(R.id.openDayCheckbox);
-        saveCarLocButton =      (Button)    findViewById(R.id.saveCarLocButton);
-        drawRouteButton =       (Button)    findViewById(R.id.drawRouteButton);
-        Button  navigateToCar = (Button)    findViewById(R.id.navigateToCar);
+        parkCarButton =      (Button)       findViewById(R.id.parkCarButton);
+
 
         //initialise GPSManager - start listening for location
         locationManager = LocationManager.getInstance(this);
@@ -111,45 +109,18 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
 
 
-        //UI ACTIONS
-
-        //update location when 'UPDATE LOCATION' button is clicked
-        updateLocationButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                updateLocation();
-            }
-        });
-
-        saveCarLocButton.setOnClickListener(new View.OnClickListener() {
+        parkCarButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 parkCar();
             }
         });
 
-        drawRouteButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                updateLocation();
-                DrawRoute.drawRoute(currentLocation, parkingLocation, map, getApplicationContext());
-            }
-        });
-
-        //test
-        navigateToCar.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), NavigateToCarScreen.class);
-
-                startActivity(i);
-            }
-        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
-
-
-
 
     }
 
