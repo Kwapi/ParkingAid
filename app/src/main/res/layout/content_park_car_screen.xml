@@ -84,6 +84,15 @@
             android:checked="false" />
 
         <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="notify in 5 seconds"
+            android:id="@+id/notifyButton"
+            android:layout_row="7"
+            android:layout_column="0" />
+
+        <Button
             android:layout_width="match_parent"
             android:layout_height="68dp"
             android:text="@string/parkCar"

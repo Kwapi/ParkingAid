@@ -1,8 +1,15 @@
 package michal.myapplication;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -38,10 +45,9 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     //UI ELEMENTS
     private EditText    desiredDurationEdit;
     private EditText    notesEdit;
-    private Button      updateLocationButton;
     private CheckBox    openDayModeCheckbox;
-    private Button parkCarButton;
-    private Button      drawRouteButton;
+    private Button      parkCarButton;
+    private Button      notifyButton;
 
     private GoogleMap map;
     private GpsTag              currentLocation;
@@ -98,7 +104,8 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         desiredDurationEdit =   (EditText)  findViewById(R.id.desDurEdit);
         notesEdit =             (EditText)  findViewById(R.id.notesEdit);
         openDayModeCheckbox =   (CheckBox)  findViewById(R.id.openDayCheckbox);
-        parkCarButton =      (Button)       findViewById(R.id.parkCarButton);
+        parkCarButton =         (Button)    findViewById(R.id.parkCarButton);
+        notifyButton =          (Button)    findViewById(R.id.notifyButton);
 
 
         //initialise GPSManager - start listening for location
@@ -112,6 +119,12 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         parkCarButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 parkCar();
+            }
+        });
+
+        notifyButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                scheduleNotification(getNotification("5 second delay"), 5000);
             }
         });
 
@@ -197,6 +210,49 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
             }
         }, delay);
 
+    }
+
+
+    private void scheduleNotification(Notification notification, int delay) {
+
+        //activity that is going to trigger the notification when woken up
+        Intent notificationIntent = new Intent(this, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+
+        //wake up the app by opening NotificationPublisher which in turn will publish the notification
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+    }
+
+    private Notification getNotification(String content) {
+
+        //where I want the notification to take the user once clicked
+        Intent resultIntent = new Intent(this, NavigateToCarScreen.class);
+
+        //pending intent which will be placed in the notification
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentTitle("Scheduled Notification");
+        builder.setContentText(content);
+        builder.setContentIntent(resultPendingIntent);
+        builder.setSmallIcon(R.drawable.icon_transparent);
+        builder.setAutoCancel(true);
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(alarmSound);
+        builder.setVibrate(new long[] { 0,1000,1000});
+        return builder.build();
     }
 
 

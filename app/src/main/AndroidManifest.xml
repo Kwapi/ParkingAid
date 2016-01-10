@@ -52,6 +52,7 @@
             android:screenOrientation="portrait">
 
         </activity>
+        <receiver android:name=".NotificationPublisher" />
     </application>
 
 </manifest>
