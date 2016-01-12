@@ -112,6 +112,16 @@ public class ParkedCar implements Serializable{
     }
 
 
+    public int calculateFee() {
+        int fee = 0;
+        GregorianCalendar endDate = (GregorianCalendar) parkTime.clone();
+        endDate.add(GregorianCalendar.MINUTE, desiredDuration);
+
+
+
+
+        return fee;
+    }
 }
 
 

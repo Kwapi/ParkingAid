@@ -1,5 +1,6 @@
 package michal.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,7 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     //UI ELEMENTS
     private Switch navigationModeSwitch;
     private TextView    notesContent;
+    private Button  foundMyCarButton;
 
     private boolean navigationMode = true;
 
@@ -109,18 +111,25 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         setSupportActionBar(toolbar);
 
         //  WIRE UI ELEMENTS
-        navigationModeSwitch = (Switch) findViewById(R.id.navigationModeSwitch);
-        notesContent = (TextView)   findViewById(R.id.notesContent);
+        navigationModeSwitch = (Switch)         findViewById(R.id.navigationModeSwitch);
+        notesContent = (TextView)               findViewById(R.id.notesContent);
+        foundMyCarButton =         (Button)     findViewById(R.id.carFoundButton);
 
         // UI ACTIONS
         // Switch between navigation and free view modes
         navigationModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     changeToNavigationMode();
-                }else{
+                } else {
                     changeToFreeViewMode();
                 }
+            }
+        });
+        //  Found my car - delete parking information and go back to ParkCarScreen
+        foundMyCarButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                deleteParkingInformation();
             }
         });
 
@@ -131,7 +140,11 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
             parkedCar = (ParkedCar) b.getSerializable("parkedCar");
 
             parkingLocation = parkedCar.getLocation();
-            notesContent.setText(parkedCar.getNotes());
+            String parkingNotes = parkedCar.getNotes();
+
+            if(!parkingNotes.isEmpty()){
+                notesContent.setText(parkingNotes);
+            }
 
             //  initialise GPSManager - start listening for location
             locationManager = LocationManager.getInstance(this);
@@ -263,6 +276,18 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Delete parked car file and navigate back to ParkCarScreen
+     */
+    public void deleteParkingInformation(){
+        //  delete parked car file from internal storage
+        parkedCar.delete(getApplicationContext());
+
+        //  navigate to ParkCarScreen
+        Intent intent = new Intent(this,ParkCarScreen.class);
+        startActivity(intent);
     }
 
 }

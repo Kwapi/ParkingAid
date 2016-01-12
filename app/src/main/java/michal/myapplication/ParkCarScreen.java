@@ -156,7 +156,15 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         int desiredDuration  = Integer.parseInt(desiredDurationText);
 
         int timeToNotify = desiredDuration * 1000 * 60;
-        scheduleNotification(getNotification("NOTIFICATION"),5000);
+
+        // 30 minute threshold
+        // if the duration is more than 30 minutes notify 15 minutes before the end time
+        if(desiredDuration <= 30){
+            timeToNotify = 3/4 * desiredDuration * 1000 * 60;
+        }else{
+            timeToNotify = (desiredDuration - 15) * 1000 * 60;
+        }
+        scheduleNotification(getNotification("Time to go back to your car"),timeToNotify);
 
         String notes = notesEdit.getText().toString();
         boolean openDayMode = openDayModeCheckbox.isChecked();
@@ -268,7 +276,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
 
         Notification.Builder builder = new Notification.Builder(this);
-        builder.setContentTitle("Scheduled Notification");
+        builder.setContentTitle("Parking Aid - Parking Reminder");
         builder.setContentText(content);
         builder.setContentIntent(resultPendingIntent);
         builder.setSmallIcon(R.drawable.icon_transparent);

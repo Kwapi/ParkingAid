@@ -152,6 +152,9 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
+    /**
+     * Delete parked car file and return to ParkCarScreen
+     */
     public void deleteParkingInformation(){
         //  delete parked car file from internal storage
         parkedCar.delete(getApplicationContext());
@@ -161,6 +164,9 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         startActivity(intent);
     }
 
+    /**
+     * Pass the parkedCar object to NavigateToCarScreen activity
+     */
     public void navigateToCar(){
         Bundle b = new Bundle();
         Intent intent = new Intent(this, NavigateToCarScreen.class);

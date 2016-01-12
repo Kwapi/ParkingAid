@@ -9,7 +9,8 @@
     <string name="title_activity_show_location">ShowLocationActivity</string>
     <string name="title_activity_maps2">Map</string>
     <string name="title_activity_overview_screen">Parking Aid - Parking Overview</string>
-    <string name="title_navigate_to_car_screen">Parking Aid - Navigate to Your Car</string>
-    <string name="title_park_car_screen">Parking Aid - Park your Car</string>
+    <string name="title_navigate_to_car_screen">Parking Aid - Navigate to Car</string>
+    <string name="title_park_car_screen">Parking Aid - Park Car</string>
+    <string name="car_found_button_label">I found my car</string>
     <string name="parkCar">Park your Car</string>
 </resources>
