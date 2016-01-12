@@ -140,11 +140,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
             }
         });
 
-        notifyButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
 
-            }
-        });
 
 
     }
