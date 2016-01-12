@@ -49,7 +49,11 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     private MapRotator mapRotator;
     final Handler h = new Handler();
 
-
+    /**
+     *  Called when using Navigation mode
+     *
+     *  Close zoom, and tilt to simulate sat nav mode
+     */
     public void updateMapDisplay(){
 
         if(currentLocation!=null) {
@@ -61,11 +65,12 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
                                     .zoom(20.0f)
                                     .build())
             );
-
-
         }
     }
 
+    /**
+     *  Retrieves new current location and if it's different to the one already stored - update the view
+     */
     public void updateLocation(){
 
         // wait for the gpsManager to be ready - can get current location
@@ -107,6 +112,8 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         navigationModeSwitch = (Switch) findViewById(R.id.navigationModeSwitch);
         notesContent = (TextView)   findViewById(R.id.notesContent);
 
+        // UI ACTIONS
+        // Switch between navigation and free view modes
         navigationModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
@@ -118,7 +125,7 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         });
 
 
-        //  get the ParkedCar from previous activity
+        //  get the ParkedCar from Overview Screen
         Bundle b = this.getIntent().getExtras();
         if(b !=null){
             parkedCar = (ParkedCar) b.getSerializable("parkedCar");
@@ -129,11 +136,11 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
             //  initialise GPSManager - start listening for location
             locationManager = LocationManager.getInstance(this);
 
-
             // GET MAP
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
+
 
             //  check if there's a location update every 3 seconds
             final int delay = 3000; //milliseconds
@@ -152,21 +159,36 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     }
 
     @Override
+    /**
+     *  Triggered when the map is ready
+     *  By default starts in navigation mode
+     *
+     */
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
+        // add parking location marker
         map.addMarker(new MarkerOptions().position(Utils.toLatLng(parkingLocation)));
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);
-        // poo is life. I wash my hair with poo. Yay poo. It is a sustainable resource. Written by Evangeline Williams, Ipswich born and raised. xxx thug life
+
+        // update the location
 
         updateLocation();
+        // start by default in navigation mode
         changeToNavigationMode();
     }
 
+    /**
+     * Navigation mode - constantly updates the view
+     *
+     * User is restricted from moving around or zooming
+     *
+     * Calls updateMapDisplay - default function - close zoom, tilted view, like satnav
+     */
     public void changeToNavigationMode(){
         map.getUiSettings().setRotateGesturesEnabled(false);
         map.getUiSettings().setTiltGesturesEnabled(false);
@@ -181,9 +203,14 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
 
     }
 
+    /**
+     *  Free view mode - starts with a view that shows both current location and parking location
+     *
+     *  User can zoom and move around - location update does not override the view
+     */
     public void changeToFreeViewMode(){
+        // enable user to scroll and zoom - no rotation allowed (already done automatically)
         map.getUiSettings().setRotateGesturesEnabled(false);
-
         map.getUiSettings().setScrollGesturesEnabled(true);
         map.getUiSettings().setZoomGesturesEnabled(true);
 
@@ -191,6 +218,9 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
 
 
         if(currentLocation!=null && parkingLocation!=null) {
+
+            // make sure the view includes both the current location and parking location
+
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
             builder.include(Utils.toLatLng(currentLocation));
@@ -217,6 +247,10 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
     }
 
     @Override
+    /**
+     *  Method that deals with the settings drawer
+     *  Opens up map type selector dialogue
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();

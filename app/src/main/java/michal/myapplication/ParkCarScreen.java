@@ -45,9 +45,6 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
     public static final String TAG = ParkCarScreen.class.getSimpleName();
 
-
-
-
     //UI ELEMENTS
     private EditText    desiredDurationEdit;
     private EditText    notesEdit;
@@ -55,16 +52,17 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     private Button      parkCarButton;
     private Button      notifyButton;
 
-    private GoogleMap map;
+    private GoogleMap           map;
     private GpsTag              currentLocation;
     private GpsTag              parkingLocation;
     private LocationManager     locationManager;
     private MapRotator          mapRotator;
     final Handler h = new Handler();
 
-
-
-
+    /**
+     * Update marker and move camera to it
+     * @param location - location to be put in the updated marker
+     */
     public void updateMarker(GpsTag location){
         map.clear();
         LatLng currentPosition = Utils.toLatLng(location);
@@ -77,7 +75,11 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     }
 
 
-
+    /**
+     * Check if there is a location update
+     *
+     * If there is - update the map (updateMarker)
+     */
     public void updateLocation(){
 
         // wait for the gpsManager to be ready - can get current location
@@ -93,7 +95,6 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
                  updateMarker(currentLocation);
              }
 
-
         }else{
             Log.i(TAG,"GPSmanager is still not connected");
         }
@@ -107,34 +108,32 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-        //WIRE UI ELEMENTS
+        //  WIRE UI ELEMENTS
         desiredDurationEdit =   (EditText)  findViewById(R.id.desDurEdit);
         notesEdit =             (EditText)  findViewById(R.id.notesEdit);
         openDayModeCheckbox =   (CheckBox)  findViewById(R.id.openDayCheckbox);
         parkCarButton =         (Button)    findViewById(R.id.parkCarButton);
-        notifyButton =          (Button)    findViewById(R.id.notifyButton);
 
-
-
-
-        if(ParkedCar.read(this)!=null){
-            // we've already got a car parked
-
+        if(ParkedCar.read(this)!=null){  // we've already got a car parked
             // open OverviewScreen
             Intent intent = new Intent(this, OverviewScreen.class);
             startActivity(intent);
         }
 
-        //hardcoded parking location for testing purposes
+        //  hardcoded parking location for testing purposes
         parkingLocation = new GpsTag(ParkedCar.PARKED_CAR_LOCATION,52.623247,1.241826,29);
-        //initialise GPSManager - start listening for location
+
+        //  initialise GPSManager - start listening for location
         locationManager = LocationManager.getInstance(this);
 
 
+        // GET MAP
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
-
+        //  UI ACTIONS
         parkCarButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 parkCar();
@@ -147,12 +146,6 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
             }
         });
 
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-
-        mapFragment.getMapAsync(this);
 
     }
 

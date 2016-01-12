@@ -87,14 +87,16 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //initialise GPSManager - start listening for location
+        //  initialise GPSManager - start listening for location
         locationManager = LocationManager.getInstance(this);
 
+        //  WIRE UI ELEMENTS
+        navigateToCarButton =      (Button)    findViewById(R.id.navigateToCarButton);
+        deleteParkingInformationButton = (Button) findViewById(R.id.deleteParkingLocationButton);
         parkedCarString = (TextView) findViewById(R.id.parkedCarString);
 
-
+        //  GET PARKED CAR OBJECT
         Bundle b = this.getIntent().getExtras();
-
         if(b !=null){
             // THE PARKED CAR OBJECT WAS PERSISTED THROUGH BUNDLE
 
@@ -115,26 +117,16 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         parkingLocation = parkedCar.getLocation();
         parkedCarString.setText(parkedCar.toString());
 
-        //WIRE UI ELEMENTS
 
-        navigateToCarButton =      (Button)    findViewById(R.id.navigateToCarButton);
-        deleteParkingInformationButton = (Button) findViewById(R.id.deleteParkingLocationButton);
-
-
-
-
-
-
-        //UI ACTIONS
+        //  GET MAP
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
 
-
+        //  UPDATE LOCATION EVERY 3 SECONDS
         final int delay = 3000; //milliseconds
-
         h.postDelayed(new Runnable() {
             public void run() {
                 //do something
@@ -144,7 +136,7 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
             }
         }, delay);
 
-
+        //  UI ACTIONS
         navigateToCarButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 navigateToCar();
@@ -161,12 +153,11 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
     }
 
     public void deleteParkingInformation(){
-        Context context = getApplicationContext();
+        //  delete parked car file from internal storage
+        parkedCar.delete(getApplicationContext());
 
-        parkedCar.delete(context);
-
+        //  navigate to ParkCarScreen
         Intent intent = new Intent(this,ParkCarScreen.class);
-
         startActivity(intent);
     }
 
@@ -185,18 +176,17 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         return true;
     }
 
+    // Deals with changing map type from the settings menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
 
         if (id == R.id.select_map_type) {
-
             if(map!=null) {
                 Utils.getMapTypeSelectorDialog(map, OverviewScreen.this).show();
             }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -206,7 +196,9 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
-        map.addMarker(new MarkerOptions().position(Utils.toLatLng(parkingLocation)));
+        map.addMarker(new MarkerOptions().
+                position(Utils.toLatLng(parkingLocation))
+                .title("Your car"));
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);
