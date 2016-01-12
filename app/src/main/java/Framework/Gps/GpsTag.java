@@ -3,11 +3,14 @@
  */
 package Framework.Gps;
 
+import java.io.Serializable;
+
 /**
  *
- * @author George Hatt
+ * @author George Hatt/Michal Zak
  */
-public class GpsTag {
+public class GpsTag implements Serializable{
+    static final long serialVersionUID = 4L;
     private double longitude,latitude,altitude;
     private String name;
 
@@ -68,12 +71,14 @@ public class GpsTag {
             return false;
         }
 
-        if(gpsTagOne.getLatitude() != gpsTagTwo.getLatitude()){
-            return false;
+        if (gpsTagOne.getLatitude() != gpsTagTwo.getLatitude()) {
+                return false;
         }
-        if(gpsTagOne.getLongitude() != gpsTagTwo.getLongitude()){
-            return false;
-        }
+
+        if (gpsTagOne.getLongitude() != gpsTagTwo.getLongitude()) {
+                return false;
+            }
+
 
         return true;
     }

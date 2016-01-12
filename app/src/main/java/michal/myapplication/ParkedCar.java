@@ -1,25 +1,29 @@
 package michal.myapplication;
 
+import android.content.Context;
+
 import com.google.android.gms.location.LocationRequestCreator;
 
 import java.io.Serializable;
 import java.util.GregorianCalendar;
 
+import Framework.FileIO;
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 
 
 public class ParkedCar implements Serializable{
-
+    static final String FILE_NAME = "parkedCar.pa";
     static final long serialVersionUID = 1L;
+    public static final String PARKED_CAR_LOCATION = "parkedCarLocation";
 
+    public GpsTag parkingLocation = null;
     public static final String TAG = ParkedCar.class.getSimpleName();
     private static ParkedCar instance = null;
     private String notes;
     private boolean openDayMode;
     private GregorianCalendar parkTime;
     private int desiredDuration;
-
 
 
     private ParkedCar(){
@@ -64,9 +68,20 @@ public class ParkedCar implements Serializable{
         this.notes = notes;
     }
 
+    /*
     public GpsTag getLocation(){
-        return LocationManager.getStoredLocation("parkedCarLocation");
+        return LocationManager.getStoredLocation(PARKED_CAR_LOCATION);
     }
+    */
+
+    public GpsTag getLocation(){
+        return parkingLocation;
+    }
+
+    public void setLocation(GpsTag parkingLocation){
+        this.parkingLocation = parkingLocation;
+    }
+
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
@@ -83,6 +98,20 @@ public class ParkedCar implements Serializable{
 
         return sb.toString();
     }
+
+    public void save(Context context){
+        FileIO.saveToFile(this, context, FILE_NAME);
+    }
+
+    public static ParkedCar read(Context context){
+       return (ParkedCar) FileIO.readFromFile(context, FILE_NAME);
+    }
+
+    public void delete(Context context){
+        FileIO.deleteFile(context, FILE_NAME);
+    }
+
+
 }
 
 

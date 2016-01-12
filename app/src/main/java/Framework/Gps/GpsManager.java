@@ -10,7 +10,7 @@ import java.util.Observable;
 
 /**
  *
- * @author George Hatt
+ * @author George Hatt/Michal Zak
  */
 public abstract class GpsManager{
     /**
@@ -21,6 +21,6 @@ public abstract class GpsManager{
      */
     public abstract GpsTag getCurrentGpsLocation(String name);
 
-    public abstract boolean isConnected();
+    public abstract boolean isReady();
 
 }

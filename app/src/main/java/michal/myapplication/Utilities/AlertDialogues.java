@@ -26,6 +26,7 @@ public class AlertDialogues {
                 returnToParkCarScreen(context);
             }
         });
+        dlgAlert.setCancelable(false);
 
         return dlgAlert.create();
     }
@@ -34,6 +35,17 @@ public class AlertDialogues {
     private static void returnToParkCarScreen(Context context){
         Intent intent = new Intent(context,ParkCarScreen.class);
         context.startActivity(intent);
+    }
+
+    public static AlertDialog noDurationInput(Context cont){
+        final Context context = cont;
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(context);
+
+        dlgAlert.setMessage("Please put in the desired duration of stay");
+        dlgAlert.setTitle("Error");
+        dlgAlert.setCancelable(true);
+
+        return dlgAlert.create();
     }
 
 

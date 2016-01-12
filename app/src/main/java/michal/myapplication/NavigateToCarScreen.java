@@ -68,11 +68,11 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
 
     public void updateLocation(){
 
-        // wait for the gpsManager to be connected
+        // wait for the gpsManager to be ready - can get current location
         if(locationManager.isReady()) {
 
             //adding a name because of the framework specification
-            GpsTag newLocation = locationManager.getCurrentLocation("parkedCarLocation");
+            GpsTag newLocation = locationManager.getCurrentLocation(ParkedCar.PARKED_CAR_LOCATION);
 
 
             //only update when location changes
@@ -161,6 +161,7 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);
+        // poo is life. I wash my hair with poo. Yay poo. It is a sustainable resource. Written by Evangeline Williams, Ipswich born and raised. xxx thug life
 
         updateLocation();
         changeToNavigationMode();

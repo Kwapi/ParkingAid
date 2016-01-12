@@ -1,12 +1,20 @@
 package Framework.Gps;
 
+import android.content.Context;
+
+import java.io.Serializable;
 import java.util.ArrayList;
+
+import Framework.FileIO;
 
 /**
  *
- * @author George Hatt
+ * @author George Hatt/Michal Zak
  */
-public class GpsTagTree {
+public class GpsTagTree implements Serializable{
+    static final long serialVersionUID = 2L;
+    static final String FILE_NAME = "storedLocations.ser";
+
     private Node n = new Node('a',0);
     
     /**
@@ -29,18 +37,20 @@ public class GpsTagTree {
     }
     
     class Node{
+        static final long serialVersionUID = 3L;
+
         private int level;
         private char letter;
         private GpsTag data;
         private ArrayList<Node> nodes;
-         
+
         public Node(char c, int level){
             this.level = level;
             this.letter = c;
             nodes = new ArrayList();
             data = null;
         }
-        
+
         public void addGpsTag(String s, GpsTag data){
             // if at end of string
             if(s.length() == (level)){
@@ -55,7 +65,7 @@ public class GpsTagTree {
                         n.addGpsTag(s, data);
                         letterExist = true;
                     }
-                } 
+                }
 
                 // add new node
                 if(!letterExist){
@@ -77,14 +87,27 @@ public class GpsTagTree {
                     if(n.getLetter() == s.charAt(level)){
                         return n.getGpsTag(s);
                     }
-                } 
-                
+                }
+
                 return null;
             }
         }
-        
+
         public char getLetter(){
             return letter;
         }
+    }
+
+
+    public void save(Context context){
+        FileIO.saveToFile(this, context, FILE_NAME);
+    }
+
+    public static GpsTagTree loadFromFile(Context context){
+        return (GpsTagTree) FileIO.readFromFile(context, FILE_NAME);
+    }
+
+    public boolean delete(Context context){
+        return FileIO.deleteFile(context, FILE_NAME);
     }
 }

@@ -1,5 +1,6 @@
 package michal.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,16 +13,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 import Framework.MapHelpers.MapRotator;
 import Framework.MapHelpers.Utils;
+import michal.myapplication.Utilities.AlertDialogues;
 
 public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -34,6 +39,8 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
 
     private Button      navigateToCarButton;
     private TextView parkedCarString;
+    private Button      deleteParkingInformationButton;
+
 
     private GoogleMap map;
     private GpsTag currentLocation;
@@ -44,29 +51,27 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
 
 
     public void updateMarker(GpsTag location){
-        map.clear();
-        LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-        /*map.addMarker(new MarkerOptions().
-                position(currentPosition)
-                .title("You are here"));
-        */
+       LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
     }
 
     public void updateLocation(){
 
-        // wait for the gpsManager to be connected
+        // wait for the gpsManager to be ready - can get current location
         if(locationManager.isReady()) {
 
             //adding a name because of the framework specification
-            GpsTag newLocation = locationManager.getCurrentLocation("parkedCarLocation");
+            GpsTag newLocation = locationManager.getCurrentLocation(ParkedCar.PARKED_CAR_LOCATION);
 
 
             //only update when location changes
-            if(!GpsTag.isSameLocation(currentLocation,newLocation)){
+            if(!GpsTag.isSameLocation(currentLocation,newLocation) ){
                 currentLocation = newLocation;
                 mapRotator.updateDeclination(currentLocation);
                 updateMarker(currentLocation);
+
+                showCurrentLocationAndParkedCar();
             }
 
         }else{
@@ -82,26 +87,42 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //initialise GPSManager - start listening for location
+        locationManager = LocationManager.getInstance(this);
+
         parkedCarString = (TextView) findViewById(R.id.parkedCarString);
+
 
         Bundle b = this.getIntent().getExtras();
 
-
-
         if(b !=null){
+            // THE PARKED CAR OBJECT WAS PERSISTED THROUGH BUNDLE
+
             parkedCar = (ParkedCar) b.getSerializable("parkedCar");
 
             parkedCarString.setText(parkedCar.toString());
+        }else{
+            // WE TRY TO GET THE PARKED CAR OBJECT FROM FILE
+            parkedCar = ParkedCar.read(this);
+
+            if(parkedCar == null){
+                Log.e(TAG, "No parkedCar from previous activity was persisted");
+                AlertDialogues.getNoCarSavedBackToParkCarScreen(this).show();
+            }
+
         }
+
+        parkingLocation = parkedCar.getLocation();
+        parkedCarString.setText(parkedCar.toString());
 
         //WIRE UI ELEMENTS
 
         navigateToCarButton =      (Button)    findViewById(R.id.navigateToCarButton);
+        deleteParkingInformationButton = (Button) findViewById(R.id.deleteParkingLocationButton);
 
 
 
-        //initialise GPSManager - start listening for location
-        locationManager = LocationManager.getInstance(this);
+
 
 
         //UI ACTIONS
@@ -130,7 +151,23 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
             }
         });
 
+        deleteParkingInformationButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                deleteParkingInformation();
+            }
+        });
 
+
+    }
+
+    public void deleteParkingInformation(){
+        Context context = getApplicationContext();
+
+        parkedCar.delete(context);
+
+        Intent intent = new Intent(this,ParkCarScreen.class);
+
+        startActivity(intent);
     }
 
     public void navigateToCar(){
@@ -169,9 +206,32 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
 
+        map.addMarker(new MarkerOptions().position(Utils.toLatLng(parkingLocation)));
+
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);
         updateLocation();
+    }
+
+    public void showCurrentLocationAndParkedCar(){
+
+        if(currentLocation!=null && parkingLocation!=null) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+            builder.include(Utils.toLatLng(currentLocation));
+            builder.include(Utils.toLatLng(parkingLocation));
+
+            LatLngBounds bounds = builder.build();
+            int padding = 0;
+
+            CameraUpdate fitZoom = CameraUpdateFactory.newLatLngBounds(bounds,padding);
+
+            map.moveCamera(fitZoom);
+
+        }else {
+            CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+            map.moveCamera(zoom);
+        }
     }
 
 }

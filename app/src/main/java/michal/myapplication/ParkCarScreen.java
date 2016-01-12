@@ -1,15 +1,19 @@
 package michal.myapplication;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -35,10 +39,12 @@ import Framework.MapHelpers.DrawRoute;
 
 import Framework.MapHelpers.MapRotator;
 import Framework.MapHelpers.Utils;
+import michal.myapplication.Utilities.AlertDialogues;
 
 public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallback{
 
     public static final String TAG = ParkCarScreen.class.getSimpleName();
+
 
 
 
@@ -74,11 +80,11 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
     public void updateLocation(){
 
-        // wait for the gpsManager to be connected
+        // wait for the gpsManager to be ready - can get current location
          if(locationManager.isReady()) {
 
              //adding a name because of the framework specification
-             GpsTag newLocation = locationManager.getCurrentLocation("parkedCarLocation");
+             GpsTag newLocation = locationManager.getCurrentLocation(ParkedCar.PARKED_CAR_LOCATION);
 
              //only update location if it's different to the one we've already got
              if(!GpsTag.isSameLocation(currentLocation,newLocation)){
@@ -95,10 +101,13 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_park_car_screen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
 
         //WIRE UI ELEMENTS
         desiredDurationEdit =   (EditText)  findViewById(R.id.desDurEdit);
@@ -108,11 +117,21 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         notifyButton =          (Button)    findViewById(R.id.notifyButton);
 
 
+
+
+        if(ParkedCar.read(this)!=null){
+            // we've already got a car parked
+
+            // open OverviewScreen
+            Intent intent = new Intent(this, OverviewScreen.class);
+            startActivity(intent);
+        }
+
+        //hardcoded parking location for testing purposes
+        parkingLocation = new GpsTag(ParkedCar.PARKED_CAR_LOCATION,52.623247,1.241826,29);
         //initialise GPSManager - start listening for location
         locationManager = LocationManager.getInstance(this);
 
-        //hardcoded parking location for testing purposes
-        parkingLocation = new GpsTag("parkingLocation",52.623247,1.241826,29);
 
 
 
@@ -124,7 +143,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
         notifyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                scheduleNotification(getNotification("5 second delay"), 5000);
+
             }
         });
 
@@ -139,8 +158,17 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
     public void parkCar(){
         //get info from forms
-        //TODO: input-check
-        int desiredDuration  = Integer.parseInt(desiredDurationEdit.getText().toString());
+        String desiredDurationText = desiredDurationEdit.getText().toString();
+
+        if(desiredDurationText.isEmpty()){
+            AlertDialogues.noDurationInput(this).show();
+            return;
+        }
+        int desiredDuration  = Integer.parseInt(desiredDurationText);
+
+        int timeToNotify = desiredDuration * 1000 * 60;
+        scheduleNotification(getNotification("NOTIFICATION"),5000);
+
         String notes = notesEdit.getText().toString();
         boolean openDayMode = openDayModeCheckbox.isChecked();
 
@@ -154,13 +182,20 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         parkedCar.setOpenDayMode(openDayMode);
         parkedCar.setNotes(notes);
         parkedCar.setParkTime(timeParked);
+        parkedCar.setLocation(parkingLocation);
 
-        locationManager.storeGpsLocation("parkedCarLocation", parkingLocation);
+        //persist the object
+        parkedCar.save(getApplicationContext());
 
+
+        //transfer the object via bundle
         Intent intent = new Intent(this, OverviewScreen.class);
         Bundle b = new Bundle();
         b.putSerializable("parkedCar", parkedCar);
         intent.putExtras(b);
+
+
+
 
         startActivity(intent);
 
@@ -232,7 +267,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     private Notification getNotification(String content) {
 
         //where I want the notification to take the user once clicked
-        Intent resultIntent = new Intent(this, NavigateToCarScreen.class);
+        Intent resultIntent = new Intent(this, OverviewScreen.class);
 
         //pending intent which will be placed in the notification
         PendingIntent resultPendingIntent = PendingIntent.getActivity(

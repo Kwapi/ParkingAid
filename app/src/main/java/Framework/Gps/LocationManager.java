@@ -7,7 +7,7 @@ import android.content.Context;
 
 /**
  *
- * @author George Hatt
+ * @author George Hatt/Michal Zak
  */
 public class LocationManager {
     private static LocationManager instance;
@@ -16,8 +16,12 @@ public class LocationManager {
     
     
     private LocationManager(Object object){
-        // initilise the tag tree
+
+
+        // initialise new gpstag tree
         storedLocations = new GpsTagTree();
+
+
         // detect os version
         int osVersion = 0;
         
@@ -54,7 +58,11 @@ public class LocationManager {
     public void storeGpsLocation(String name,GpsTag gt){
         storedLocations.addGpsTag(name, gt);
     }
-    
+
+    public boolean isReady(){
+        return gm.isReady();
+    }
+
     /**
      * extracts a stored location with the name given
      * @param name
@@ -64,8 +72,20 @@ public class LocationManager {
         return storedLocations.getGpsTag(name);
     }
 
-    public boolean isReady(){
-        return gm.isConnected();
+
+    /*
+
+    public void persistStoredLocations(Context context){
+        storedLocations.save(context);
     }
+
+    public void deleteStoredLocations(Context context){
+        storedLocations.delete(context);
+    }
+
+    public boolean deleteAllStoredLocations(Context context){
+        return storedLocations.delete(context);
+    }
+    */
 
 }
