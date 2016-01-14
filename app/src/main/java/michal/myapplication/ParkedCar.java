@@ -2,14 +2,12 @@ package michal.myapplication;
 
 import android.content.Context;
 
-import com.google.android.gms.location.LocationRequestCreator;
-
 import java.io.Serializable;
 import java.util.GregorianCalendar;
 
 import Framework.FileIO;
 import Framework.Gps.GpsTag;
-import Framework.Gps.LocationManager;
+import michal.myapplication.Utilities.FeeCalculation;
 
 
 public class ParkedCar implements Serializable{
@@ -68,6 +66,8 @@ public class ParkedCar implements Serializable{
     }
 
     /*
+    DEPRECATED
+
     public GpsTag getLocation(){
         return LocationManager.getStoredLocation(PARKED_CAR_LOCATION);
     }
@@ -94,9 +94,23 @@ public class ParkedCar implements Serializable{
         sb.append("Notes:\t"+ notes);
         sb.append("\n");
         sb.append("Open day mode: \t" + openDayMode);
+        sb.append("\n");
+        sb.append("Estimated total fee: \t" + calculateEstimatedTotalFee());
+        sb.append("\n");
+        sb.append("Current fee: \t" + calculateFeeSoFar());
+
 
         return sb.toString();
     }
+
+    public int calculateEstimatedTotalFee(){
+        return FeeCalculation.calculateFee(parkTime,endParkTime);
+    }
+
+    public int calculateFeeSoFar(){
+        return FeeCalculation.calculateFee(parkTime,new GregorianCalendar());
+    }
+
 
     public void save(Context context){
         FileIO.saveToFile(this, context, FILE_NAME);

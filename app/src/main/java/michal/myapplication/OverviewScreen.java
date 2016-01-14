@@ -98,7 +98,7 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         //  GET PARKED CAR OBJECT
         Bundle b = this.getIntent().getExtras();
         if(b !=null){
-            // THE PARKED CAR OBJECT WAS PERSISTED THROUGH BUNDLE
+            // THE PARKED CAR OBJECT WAS PERSISTED THROUGH BUNDLE FROM PREVIOUS ACTIVITY
 
             parkedCar = (ParkedCar) b.getSerializable("parkedCar");
 
