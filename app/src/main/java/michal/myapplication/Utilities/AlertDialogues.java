@@ -37,11 +37,22 @@ public class AlertDialogues {
         context.startActivity(intent);
     }
 
-    public static AlertDialog noDurationInput(Context cont){
+    public static AlertDialog noEndParkingTimePicked(Context cont){
         final Context context = cont;
         AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(context);
 
-        dlgAlert.setMessage("Please put in the desired duration of stay");
+        dlgAlert.setMessage("Please put in the parking end time");
+        dlgAlert.setTitle("Error");
+        dlgAlert.setCancelable(true);
+
+        return dlgAlert.create();
+    }
+
+    public static AlertDialog parkingTimeInThePast(Context cont){
+        final Context context = cont;
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(context);
+
+        dlgAlert.setMessage("The parking end time is in the past");
         dlgAlert.setTitle("Error");
         dlgAlert.setCancelable(true);
 

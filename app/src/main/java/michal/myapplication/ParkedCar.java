@@ -23,8 +23,15 @@ public class ParkedCar implements Serializable{
     private String notes;
     private boolean openDayMode;
     private GregorianCalendar parkTime;
-    private int desiredDuration;
+    private GregorianCalendar endParkTime;
 
+    public GregorianCalendar getEndParkTime() {
+        return endParkTime;
+    }
+
+    public void setEndParkTime(GregorianCalendar endParkTime) {
+        this.endParkTime = endParkTime;
+    }
 
     private ParkedCar(){
     }
@@ -36,14 +43,6 @@ public class ParkedCar implements Serializable{
             return new ParkedCar();
         }
     }
-    public int getDesiredDuration() {
-        return desiredDuration;
-    }
-
-    public void setDesiredDuration(int desiredDuration) {
-        this.desiredDuration = desiredDuration;
-    }
-
     public GregorianCalendar getParkTime() {
         return parkTime;
     }
@@ -90,7 +89,7 @@ public class ParkedCar implements Serializable{
         sb.append("\n");
         sb.append("Parking time:\t" + parkTime.getTime().toString());
         sb.append("\n");
-        sb.append("Desired duration:\t" + desiredDuration);
+        sb.append("Parking end time:\t" + endParkTime.getTime().toString());
         sb.append("\n");
         sb.append("Notes:\t"+ notes);
         sb.append("\n");
@@ -112,16 +111,6 @@ public class ParkedCar implements Serializable{
     }
 
 
-    public int calculateFee() {
-        int fee = 0;
-        GregorianCalendar endDate = (GregorianCalendar) parkTime.clone();
-        endDate.add(GregorianCalendar.MINUTE, desiredDuration);
-
-
-
-
-        return fee;
-    }
 }
 
 

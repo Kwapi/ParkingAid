@@ -113,7 +113,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         notesEdit =             (EditText)  findViewById(R.id.notesEdit);
         openDayModeCheckbox =   (CheckBox)  findViewById(R.id.openDayCheckbox);
         parkCarButton =         (Button)    findViewById(R.id.parkCarButton);
-        
+
         if(ParkedCar.read(this)!=null){  // we've already got a car parked
             // open OverviewScreen
             Intent intent = new Intent(this, OverviewScreen.class);
@@ -180,39 +180,34 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     }
 
     public void parkCar(){
-        //get info from forms
-        String desiredDurationText = pickParkingEndTime.getText().toString();
 
-        if(desiredDurationText.isEmpty()){
-            AlertDialogues.noDurationInput(this).show();
+
+        if(pickParkingEndTime.getText().toString().isEmpty()){
+            AlertDialogues.noEndParkingTimePicked(this).show();
             return;
         }
-        int desiredDuration  = Integer.parseInt(desiredDurationText);
-
-        int timeToNotify = desiredDuration * 1000 * 60;
-
-        // 30 minute threshold
-        // if the duration is more than 30 minutes notify 15 minutes before the end time
-        if(desiredDuration <= 30){
-            timeToNotify = 3/4 * desiredDuration * 1000 * 60;
-        }else{
-            timeToNotify = (desiredDuration - 15) * 1000 * 60;
-        }
-        scheduleNotification(getNotification("Time to go back to your car"),timeToNotify);
-
-        String notes = notesEdit.getText().toString();
-        boolean openDayMode = openDayModeCheckbox.isChecked();
 
         //set timeParked to current time
         GregorianCalendar timeParked = new GregorianCalendar();
 
+        if(timeParked.compareTo(parkingEndTime) <= 0){
+            AlertDialogues.parkingTimeInThePast(this).show();
+            return;
+        }
+
+
+
+        scheduleNotification(getNotification("Time to go back to your car"), parkingEndTime);
+
+        String notes = notesEdit.getText().toString();
+        boolean openDayMode = openDayModeCheckbox.isChecked();
 
         ParkedCar parkedCar = ParkedCar.getInstance();
 
-        parkedCar.setDesiredDuration(desiredDuration);
         parkedCar.setOpenDayMode(openDayMode);
         parkedCar.setNotes(notes);
         parkedCar.setParkTime(timeParked);
+        parkedCar.setEndParkTime(parkingEndTime);
         parkedCar.setLocation(parkingLocation);
 
         //persist the object
@@ -279,7 +274,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     }
 
 
-    private void scheduleNotification(Notification notification, int delay) {
+    private void scheduleNotification(Notification notification, GregorianCalendar date) {
 
         //activity that is going to trigger the notification when woken up
         Intent notificationIntent = new Intent(this, NotificationPublisher.class);
@@ -288,7 +283,10 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+
+
+        long futureInMillis = date.getTimeInMillis();
+        //TODO : reminder time - 15 minutes before
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 
         //wake up the app by opening NotificationPublisher which in turn will publish the notification
