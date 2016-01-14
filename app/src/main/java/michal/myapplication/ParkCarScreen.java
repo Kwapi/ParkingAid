@@ -1,19 +1,16 @@
 package michal.myapplication;
 
-import android.Manifest;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,6 +20,8 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,7 +34,6 @@ import java.util.GregorianCalendar;
 
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
-import Framework.MapHelpers.DrawRoute;
 
 import Framework.MapHelpers.MapRotator;
 import Framework.MapHelpers.Utils;
@@ -46,10 +44,11 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     public static final String TAG = ParkCarScreen.class.getSimpleName();
 
     //UI ELEMENTS
-    private EditText    desiredDurationEdit;
+    private EditText pickParkingEndTime;
     private EditText    notesEdit;
     private CheckBox    openDayModeCheckbox;
     private Button      parkCarButton;
+    private Button      timePickerButton;
     private Button      notifyButton;
 
     private GoogleMap           map;
@@ -57,6 +56,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     private GpsTag              parkingLocation;
     private LocationManager     locationManager;
     private MapRotator          mapRotator;
+    private GregorianCalendar   parkingEndTime;
     final Handler h = new Handler();
 
     /**
@@ -109,11 +109,11 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         setSupportActionBar(toolbar);
 
         //  WIRE UI ELEMENTS
-        desiredDurationEdit =   (EditText)  findViewById(R.id.desDurEdit);
+        pickParkingEndTime =   (EditText)  findViewById(R.id.pickParkingEndTime);
         notesEdit =             (EditText)  findViewById(R.id.notesEdit);
         openDayModeCheckbox =   (CheckBox)  findViewById(R.id.openDayCheckbox);
         parkCarButton =         (Button)    findViewById(R.id.parkCarButton);
-
+        
         if(ParkedCar.read(this)!=null){  // we've already got a car parked
             // open OverviewScreen
             Intent intent = new Intent(this, OverviewScreen.class);
@@ -140,6 +140,40 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
             }
         });
 
+        pickParkingEndTime.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                final GregorianCalendar mcurrentTime = new GregorianCalendar();
+                int hour = mcurrentTime.get(GregorianCalendar.HOUR_OF_DAY);
+                int minute = mcurrentTime.get(GregorianCalendar.MINUTE);
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(ParkCarScreen.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        // check if the time is in the future
+                        if (selectedHour >= mcurrentTime.get(GregorianCalendar.HOUR_OF_DAY) && selectedMinute >= mcurrentTime.get(GregorianCalendar.MINUTE)) {
+
+                            //  set the parkingEndTime to the chosen values
+                            parkingEndTime = new GregorianCalendar();
+                            parkingEndTime.set(GregorianCalendar.HOUR_OF_DAY, selectedHour);
+                            parkingEndTime.set(GregorianCalendar.MINUTE, selectedMinute);
+
+                            //  update the textView
+                            pickParkingEndTime.setText(selectedHour + ":" + selectedMinute);
+
+                        } else {
+                            Toast.makeText(ParkCarScreen.this, (String) "The selected time has to be in the future",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }, hour, minute, true);
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
+
+            }
+        });
+
 
 
 
@@ -147,7 +181,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
     public void parkCar(){
         //get info from forms
-        String desiredDurationText = desiredDurationEdit.getText().toString();
+        String desiredDurationText = pickParkingEndTime.getText().toString();
 
         if(desiredDurationText.isEmpty()){
             AlertDialogues.noDurationInput(this).show();
