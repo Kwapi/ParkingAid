@@ -220,7 +220,7 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
             builder.include(Utils.toLatLng(parkingLocation));
 
             LatLngBounds bounds = builder.build();
-            int padding = 0;
+            int padding = 50;
 
             CameraUpdate fitZoom = CameraUpdateFactory.newLatLngBounds(bounds,padding);
 

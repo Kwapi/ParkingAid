@@ -283,21 +283,24 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //  SCHEDULE THE NOTIFICATION
-        long currentTime = SystemClock.elapsedRealtime();
+        long currentTime = System.currentTimeMillis();
         long endParkingTime = date.getTimeInMillis();
         long delay = endParkingTime - currentTime;
         long reminderTime = DEFAULT_REMINDER_TIME * 60 * 1000;
         long notificationTime = 0;
+        long systemTime = SystemClock.elapsedRealtime();
 
         //  if the parking end time is within the next 15 minutes - remind in 3/4 of the delay time
         //  i.e. parking time - 15:00
         //       parking end time - 15:04
         //       reminder pops up at 15:03
         if(delay <= reminderTime){
-            notificationTime = currentTime + 3/4 * delay;
+            notificationTime = systemTime;
+            long newDelay = (long) (((float) 3/4) * delay);
+            notificationTime += newDelay;
         }
-        else{   // use the default reminder time
-            notificationTime = endParkingTime - reminderTime;
+        else{   // use the default reminder time (15 minutes)
+            notificationTime = systemTime + delay - reminderTime;
         }
 
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
