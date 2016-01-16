@@ -23,7 +23,7 @@
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Switch between Overview and Navigation Modes"
+        android:text="@string/switch_overview_navigation"
         android:id="@+id/navigationModeSwitch"
         android:layout_below="@+id/map"
         android:layout_alignParentEnd="true"
@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="There are no notes to display"
+        android:text="@string/no_notes"
         android:id="@+id/notesContent"
         android:layout_below="@+id/notesLabel"
         android:layout_alignParentStart="true"

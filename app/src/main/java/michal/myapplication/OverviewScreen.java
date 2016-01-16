@@ -22,6 +22,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.w3c.dom.Text;
+
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 import Framework.MapHelpers.MapRotator;
@@ -38,9 +40,12 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
     //UI ELEMENTS
 
     private Button      navigateToCarButton;
-    private TextView parkedCarString;
     private Button      deleteParkingInformationButton;
-
+    private TextView    parkStartContent;
+    private TextView    parkEndContent;
+    private TextView    currentFeeContent;
+    private TextView    estimatedFeeContent;
+    private TextView    notesContent;
 
     private GoogleMap map;
     private GpsTag currentLocation;
@@ -93,7 +98,13 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         //  WIRE UI ELEMENTS
         navigateToCarButton =      (Button)    findViewById(R.id.navigateToCarButton);
         deleteParkingInformationButton = (Button) findViewById(R.id.deleteParkingLocationButton);
-        parkedCarString = (TextView) findViewById(R.id.parkedCarString);
+        parkStartContent    =   (TextView)  findViewById(R.id.parkStartTimeContent);
+        parkEndContent      =   (TextView)  findViewById(R.id.parkEndTimeContent);
+        notesContent        =   (TextView)  findViewById(R.id.notesContent);
+        currentFeeContent   =   (TextView)  findViewById(R.id.currentFeeContent);
+        estimatedFeeContent =   (TextView)  findViewById(R.id.estimatedFeeContent);
+
+
 
         //  GET PARKED CAR OBJECT
         Bundle b = this.getIntent().getExtras();
@@ -102,7 +113,6 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
 
             parkedCar = (ParkedCar) b.getSerializable("parkedCar");
 
-            parkedCarString.setText(parkedCar.toString());
         }else{
             // WE TRY TO GET THE PARKED CAR OBJECT FROM FILE
             parkedCar = ParkedCar.read(this);
@@ -115,8 +125,7 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         }
 
         parkingLocation = parkedCar.getLocation();
-        parkedCarString.setText(parkedCar.toString());
-
+        updateTextViews(parkedCar);
 
         //  GET MAP
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -152,6 +161,22 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
+    private void updateTextViews(ParkedCar parkedCar){
+        parkStartContent.setText(parkedCar.getStartTime());
+        parkEndContent.setText(parkedCar.getEndTime());
+        String openDayModeDisclaimer = "FREE";
+        if(parkedCar.isOpenDayMode()){
+            currentFeeContent.setText(openDayModeDisclaimer);
+            estimatedFeeContent.setText(openDayModeDisclaimer);
+        }else {
+            currentFeeContent.setText(parkedCar.calculateFeeSoFar());
+            estimatedFeeContent.setText(parkedCar.calculateEstimatedTotalFee());
+        }
+        if(!parkedCar.getNotes().isEmpty()){
+            notesContent.setText(parkedCar.getNotes());
+        }
+
+    }
     /**
      * Delete parked car file and return to ParkCarScreen
      */
@@ -201,6 +226,7 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         map = googleMap;
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setCompassEnabled(false);
 
         map.addMarker(new MarkerOptions().
                 position(Utils.toLatLng(parkingLocation))

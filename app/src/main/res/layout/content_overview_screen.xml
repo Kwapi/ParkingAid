@@ -18,23 +18,16 @@
         tools:context="michal.myapplication.ParkCarScreen"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/parkedCarString"
-        android:layout_below="@+id/map"
-        android:layout_centerHorizontal="true" />
-
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="NAVIGATE TO CAR"
         android:id="@+id/navigateToCarButton"
-        android:layout_below="@+id/parkedCarString"
-        android:layout_alignStart="@+id/deleteParkingLocationButton"
-        android:layout_alignEnd="@+id/deleteParkingLocationButton" />
+        android:layout_below="@+id/notesContent"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/textView9"
+        android:layout_above="@+id/deleteParkingLocationButton" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -42,8 +35,107 @@
         android:layout_height="wrap_content"
         android:text="DELETE PARKING INFORMATION"
         android:id="@+id/deleteParkingLocationButton"
-        android:layout_below="@+id/navigateToCarButton"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/notesLabel"
+        android:layout_marginBottom="40dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/park_start_label"
+        android:id="@+id/parkStartTimeLabel"
+        android:layout_below="@+id/map"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/parkStartTimeContent"
+        android:layout_below="@+id/map"
+        android:layout_alignEnd="@+id/map" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/park_end_label"
+        android:id="@+id/parkEndLabel"
+        android:layout_below="@+id/parkStartTimeLabel"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/parkEndTimeContent"
+        android:layout_below="@+id/parkStartTimeContent"
+        android:layout_alignEnd="@+id/parkStartTimeContent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/fee_current_label"
+        android:id="@+id/feeCurrentLabel"
+        android:layout_below="@+id/parkEndLabel"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/fee_estimated_label"
+        android:id="@+id/feeEstimatedLabel"
+        android:layout_below="@+id/feeCurrentLabel"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/textView9"
+        android:layout_below="@+id/feeEstimatedLabel"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/currentFeeContent"
+        android:layout_below="@+id/parkEndTimeContent"
+        android:layout_alignEnd="@+id/parkEndTimeContent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/estimatedFeeContent"
+        android:layout_below="@+id/currentFeeContent"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/notes_label"
+        android:id="@+id/notesLabel"
+        android:layout_below="@+id/feeEstimatedLabel"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/no_notes"
+        android:id="@+id/notesContent"
+        android:layout_below="@+id/textView9"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>

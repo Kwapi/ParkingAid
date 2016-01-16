@@ -72,6 +72,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
                 position(currentPosition)
                 .title("You are here"));
 
+        //  default zoom
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
     }
 
@@ -122,7 +123,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         }
 
         //  hardcoded parking location for testing purposes
-        parkingLocation = new GpsTag(ParkedCar.PARKED_CAR_LOCATION,52.623247,1.241826,29);
+        //parkingLocation = new GpsTag(ParkedCar.PARKED_CAR_LOCATION,52.623247,1.241826,29);
 
         //  initialise GPSManager - start listening for location
         locationManager = LocationManager.getInstance(this);
@@ -135,52 +136,56 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         mapFragment.getMapAsync(this);
 
         //  UI ACTIONS
-        //  click on park the car button - parkCar();
         parkCarButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 parkCar();
             }
         });
 
-        //  click on parking end time text field - trigger a time picker to show
-        //                                       - update parkingEndTime variable
         pickParkingEndTime.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                final GregorianCalendar mcurrentTime = new GregorianCalendar();
-                int hour = mcurrentTime.get(GregorianCalendar.HOUR_OF_DAY);
-                int minute = mcurrentTime.get(GregorianCalendar.MINUTE);
-                TimePickerDialog mTimePicker;
-                mTimePicker = new TimePickerDialog(ParkCarScreen.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        // check if the time is in the future
-                        if (selectedHour >= mcurrentTime.get(GregorianCalendar.HOUR_OF_DAY) && selectedMinute >= mcurrentTime.get(GregorianCalendar.MINUTE)) {
-
-                            //  set the parkingEndTime to the chosen values
-                            parkingEndTime = new GregorianCalendar();
-                            parkingEndTime.set(GregorianCalendar.HOUR_OF_DAY, selectedHour);
-                            parkingEndTime.set(GregorianCalendar.MINUTE, selectedMinute);
-
-                            //  update the textView
-                            String selectedMinuteStr = String.valueOf(selectedMinute);
-                            if(selectedMinute<10){
-                                selectedMinuteStr = "0" + selectedMinuteStr;
-                            }
-                            pickParkingEndTime.setText(selectedHour + ":" + selectedMinuteStr);
-
-                        } else {
-                            Toast.makeText(ParkCarScreen.this, (String) "The selected time has to be in the future",
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }, hour, minute, true);
-                mTimePicker.setTitle("Select Time");
-                mTimePicker.show();
+                showTimePicker();
             }
         });
 
+
+    }
+
+    /**
+     * Creates and shows a time picker that updates parkingEndTime variable
+     */
+    public void showTimePicker(){
+        final GregorianCalendar mcurrentTime = new GregorianCalendar();
+        int hour = mcurrentTime.get(GregorianCalendar.HOUR_OF_DAY);
+        int minute = mcurrentTime.get(GregorianCalendar.MINUTE);
+        TimePickerDialog mTimePicker;
+        mTimePicker = new TimePickerDialog(ParkCarScreen.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                // check if the time is in the future
+                if (selectedHour >= mcurrentTime.get(GregorianCalendar.HOUR_OF_DAY) && selectedMinute >= mcurrentTime.get(GregorianCalendar.MINUTE)) {
+
+                    //  set the parkingEndTime to the chosen values
+                    parkingEndTime = new GregorianCalendar();
+                    parkingEndTime.set(GregorianCalendar.HOUR_OF_DAY, selectedHour);
+                    parkingEndTime.set(GregorianCalendar.MINUTE, selectedMinute);
+
+                    //  update the textView
+                    String selectedMinuteStr = String.valueOf(selectedMinute);
+                    if(selectedMinute<10){
+                        selectedMinuteStr = "0" + selectedMinuteStr;
+                    }
+                    pickParkingEndTime.setText(selectedHour + ":" + selectedMinuteStr);
+
+                } else {
+                    Toast.makeText(ParkCarScreen.this, (String) "The selected time has to be in the future",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        }, hour, minute, true);
+        mTimePicker.setTitle("Select Parking End Time");
+        mTimePicker.show();
     }
 
     public void parkCar(){
@@ -203,6 +208,9 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         //  collect info from forms
         String notes = notesEdit.getText().toString();
         boolean openDayMode = openDayModeCheckbox.isChecked();
+
+        //  set parking location to current location
+        parkingLocation = currentLocation;
 
         //  create new ParkedCar object
         ParkedCar parkedCar = ParkedCar.getInstance();
@@ -251,6 +259,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        map.getUiSettings().setCompassEnabled(false);
 
         // start automatic mapRotation
         mapRotator = new MapRotator(this,map);

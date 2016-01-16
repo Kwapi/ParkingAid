@@ -103,14 +103,39 @@ public class ParkedCar implements Serializable{
         return sb.toString();
     }
 
-    public int calculateEstimatedTotalFee(){
-        return FeeCalculation.calculateFee(parkTime,endParkTime);
+    public String calculateEstimatedTotalFee(){
+        String result = "£" + FeeCalculation.calculateFee(parkTime,endParkTime) + ".00";
+
+        return result;
     }
 
-    public int calculateFeeSoFar(){
-        return FeeCalculation.calculateFee(parkTime,new GregorianCalendar());
+    public String calculateFeeSoFar(){
+        String result = "£" + FeeCalculation.calculateFee(parkTime,new GregorianCalendar()) + ".00";
+        return result;
     }
 
+    public String getStartTime(){
+        return getFormattedTime(parkTime);
+    }
+
+    public String getEndTime(){
+        return getFormattedTime(endParkTime);
+    }
+    private String getFormattedTime(GregorianCalendar time){
+        StringBuilder stringBuilder = new StringBuilder();
+        int hour = time.get(GregorianCalendar.HOUR_OF_DAY);
+        int minute = time.get(GregorianCalendar.MINUTE);
+
+        stringBuilder.append(hour);
+        stringBuilder.append(":");
+        if(minute<10){
+            stringBuilder.append("0");
+        }
+        stringBuilder.append(minute);
+
+        return stringBuilder.toString();
+
+    }
 
     public void save(Context context){
         FileIO.saveToFile(this, context, FILE_NAME);

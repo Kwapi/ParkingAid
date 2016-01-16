@@ -36,8 +36,7 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
 
     private ParkedCar parkedCar;
 
-
-    //UI ELEMENTS
+    //  UI ELEMENTS
     private Switch navigationModeSwitch;
     private TextView    notesContent;
     private Button  foundMyCarButton;
@@ -181,6 +180,7 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
         map = googleMap;
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
+        map.getUiSettings().setCompassEnabled(false);
 
         // add parking location marker
         map.addMarker(new MarkerOptions().position(Utils.toLatLng(parkingLocation)));
@@ -211,7 +211,7 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
 
         navigationMode = true;
 
-        //force map update
+        //  force map update
         updateMapDisplay();
 
     }

@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Parking Aid</string>
     <string name="title_select_map_type">Change map type</string>
-    <string name="open_day_toggle">Open Day</string>
+    <string name="open_day_toggle">Enable \'Open Day\' mode</string>
     <string name="set_time">Set Time</string>
-    <string name="desired_duration">Desired Duration</string>
-    <string name="notes">Notes</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_show_location">ShowLocationActivity</string>
     <string name="title_activity_maps2">Map</string>
@@ -12,5 +10,16 @@
     <string name="title_navigate_to_car_screen">Parking Aid - Navigate to Car</string>
     <string name="title_park_car_screen">Parking Aid - Park Car</string>
     <string name="car_found_button_label">I found my car</string>
-    <string name="parkCar">Park your Car</string>
+    <string name="park_start_label"><b>Car parked at</b></string>
+    <string name="park_end_label"><b>Desired stay until</b></string>
+    <string name="fee_current_label"><b>Parking cost so far</b></string>
+    <string name="fee_estimated_label"><b>Estimated total parking cost</b></string>
+    <string name="notes_label"><b>Notes</b></string>
+    <string name="park_car_button">Park your Car</string>
+    <string name="notes_label_opt">Notes(optional)</string>
+    <string name="open_day_clarification">\'Open Day\' mode does not calculate the parking fee</string>
+    <string name="delete_parking_info">Delete parking information</string>
+    <string name="no_notes">There are no notes to display</string>
+    <string name="switch_overview_navigation">Switch between Overview and Navigation Modes</string>
+    <string name="park_end_label_2">Desired stay until</string>
 </resources>
