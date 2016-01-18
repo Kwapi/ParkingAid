@@ -1,6 +1,5 @@
 package michal.myapplication;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,14 +21,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.w3c.dom.Text;
-
 import Framework.Gps.GpsTag;
 import Framework.Gps.LocationManager;
 import Framework.MapHelpers.MapRotator;
 import Framework.MapHelpers.Utils;
 import michal.myapplication.Utilities.AlertDialogues;
 
+/**
+ * OverviewScreen is an Activity that provides an overview of the parking
+ * - start time
+ * - end time
+ * - notes
+ * - current and total fee
+ *
+ * From that Activity the user can delete parking information or proceed to NavigateToCarScreen Activity
+ */
 public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String TAG = OverviewScreen.class.getSimpleName();
@@ -47,20 +53,17 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
     private TextView    estimatedFeeContent;
     private TextView    notesContent;
 
-    private GoogleMap map;
-    private GpsTag currentLocation;
-    private GpsTag parkingLocation;
+    private GoogleMap       map;
+    private GpsTag          currentLocation;
+    private GpsTag          parkingLocation;
     private LocationManager locationManager;
-    private MapRotator mapRotator;
-    final Handler h = new Handler();
+    private MapRotator      mapRotator;
+    private final Handler   h = new Handler();
 
 
-    public void updateMarker(GpsTag location){
-       LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
-    }
-
+    /**
+     *  Retrieves new current location and if it's different to the one already stored - update the view
+     */
     public void updateLocation(){
 
         // wait for the gpsManager to be ready - can get current location
@@ -74,8 +77,6 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
             if(!GpsTag.isSameLocation(currentLocation,newLocation) ){
                 currentLocation = newLocation;
                 mapRotator.updateDeclination(currentLocation);
-                updateMarker(currentLocation);
-
                 showCurrentLocationAndParkedCar();
             }
 
@@ -161,6 +162,10 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
+    /**
+     * Update all UI TextViews that contain content pertaining to ParkedCar
+     * @param parkedCar - ParkedCar
+     */
     private void updateTextViews(ParkedCar parkedCar){
         parkStartContent.setText(parkedCar.getStartTime());
         parkEndContent.setText(parkedCar.getEndTime());
@@ -237,6 +242,9 @@ public class OverviewScreen extends AppCompatActivity implements OnMapReadyCallb
         updateLocation();
     }
 
+    /**
+     * Update the map to show both current location and parked car on one canvas
+     */
     public void showCurrentLocationAndParkedCar(){
 
         if(currentLocation!=null && parkingLocation!=null) {

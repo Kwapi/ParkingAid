@@ -39,6 +39,11 @@ import Framework.MapHelpers.MapRotator;
 import Framework.MapHelpers.Utils;
 import michal.myapplication.Utilities.AlertDialogues;
 
+/**
+ * ParkCarScreen is an Activity that enables user to store the current location and time and save it in a ParkedCar object.
+ * Additionally the user can add notes. Pressing the 'Park Car' button persists the data, prepares and schedules a reminder notification
+ * and navigates to the next screen/Activity- OverviewScreen
+ */
 public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallback{
 
     public static final String TAG = ParkCarScreen.class.getSimpleName();
@@ -58,7 +63,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     private LocationManager     locationManager;
     private MapRotator          mapRotator;
     private GregorianCalendar   parkingEndTime;
-    final Handler h = new Handler();
+    private final Handler h = new Handler();
 
     /**
      * Update marker and move camera to it
@@ -188,6 +193,11 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         mTimePicker.show();
     }
 
+
+    /**
+     * Save all provided information along with parking location in a ParkedCar object,
+     * schedule a reminder notification and proceed to OverviewScreen
+     */
     public void parkCar(){
 
         //  check if the end of parking time has been picked
@@ -281,6 +291,14 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
 
     }
 
+    /**
+     * Schedules the notification to be raised before the provided time extracted form the GregorianCalendar object.
+     * The reminder time is dependant on the amount of time between start of parking and end of parking. Default value can be set
+     * by changing DEFAULT_REMINDER_TIME
+     *
+     * @param notification - notification to be raised
+     * @param date - date before which the notification will be raised
+     */
     private void scheduleNotification(Notification notification, GregorianCalendar date) {
         //  PREPARE THE NOTIFICATION
 
@@ -318,6 +336,12 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, notificationTime, pendingIntent);
     }
 
+    /**
+     * Prepare the notification which when clicked takes the user to OverviewScreen
+     *
+     * @param content - content text within the notification
+     * @return
+     */
     private Notification getNotification(String content) {
 
         //  where I want the notification to take the user once clicked
@@ -343,6 +367,5 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
             builder.setVibrate(new long[] { 0,1000,1000});
         return builder.build();
     }
-
 
 }

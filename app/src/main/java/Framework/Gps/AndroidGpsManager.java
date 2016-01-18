@@ -26,11 +26,11 @@ public class AndroidGpsManager extends GpsManager implements
 
     private Context context;
     private boolean ready;
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+    private GoogleApiClient googleApiClient;
+    private LocationRequest locationRequest;
     private Location currentLocation;
 
-    public static final String TAG = AndroidGpsManager.class.getSimpleName();
+    private static final String TAG = AndroidGpsManager.class.getSimpleName();
 
     /**
      * returns current gps location ion gps tag object
@@ -41,19 +41,19 @@ public class AndroidGpsManager extends GpsManager implements
     public AndroidGpsManager(Context context){
 
         this.context = context;
-        initialiseTings();
+        initialise();
     }
 
-    protected void initialiseTings(){
+    private void initialise(){
 
         ready = false;
         buildGoogleApiClient();
-        mGoogleApiClient.connect();
+        googleApiClient.connect();
         createLocationRequest();
     }
-    protected void startLocationUpdates(){
+    private void startLocationUpdates(){
         LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient,mLocationRequest,this);
+                googleApiClient, locationRequest,this);
     }
 
     @Override
@@ -108,19 +108,19 @@ public class AndroidGpsManager extends GpsManager implements
         ready = false;
     }
 
-    protected synchronized void buildGoogleApiClient(){
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
+    private synchronized void buildGoogleApiClient(){
+        googleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
     }
 
-    protected void createLocationRequest(){
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
-        mLocationRequest.setFastestInterval(1000); //   1 second
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    private void createLocationRequest(){
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(1000); //   1 second
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     public boolean isReady(){

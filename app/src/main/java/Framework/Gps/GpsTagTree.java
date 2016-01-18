@@ -12,8 +12,8 @@ import Framework.FileIO;
  * @author George Hatt/Michal Zak
  */
 public class GpsTagTree implements Serializable{
-    static final long serialVersionUID = 2L;
-    static final String FILE_NAME = "storedLocations.ser";
+    public static final long serialVersionUID = 2L;
+    public static final String FILE_NAME = "storedLocations.ser";
 
     private Node n = new Node('a',0);
     

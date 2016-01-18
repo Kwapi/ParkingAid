@@ -21,23 +21,21 @@ import Framework.Gps.GpsTag;
 
 
 /**
- * Created by Michal on 30/11/2015.
+ *  A class that enables route drawing functionality
  */
 public class DrawRoute{
 
 
     private static Polyline line;
-    //TODO:
-    //might need to be replaced - has to be tested if it works on multiple apps
     private static String              myApiKey ="AIzaSyDjMCLbxy0wmqr1SbuMDo8W7SRn8flWIqw";
 
     /**
      * Call this method to generate and overlay a path onto the provided map
      *
-     * @param from
-     * @param to
-     * @param map
-     * @param context
+     * @param from      - source location
+     * @param to        - destination location
+     * @param map       - map object for the route to be drawn onto
+     * @param context   - Application/Activity Context
      */
     public static void drawRoute(GpsTag from, GpsTag to, GoogleMap map,Context context ){
 
@@ -49,30 +47,43 @@ public class DrawRoute{
     }
 
 
-
-    private static String makeURL (double sourcelat, double sourcelog, double destlat, double destlog ){
+    /**
+     * Generate a custom GET query to GoogleApi servers based on provided parameters.
+     * Note: the default path type is set to Walking
+     * @param sourceLat - source latitude
+     * @param sourceLog - source longitude
+     * @param destLat   - destination latitude
+     * @param destLog   - destination longitude
+     * @return  String - URL
+     */
+    private static String makeURL (double sourceLat, double sourceLog, double destLat, double destLog ){
         StringBuilder urlString = new StringBuilder();
         urlString.append("https://maps.googleapis.com/maps/api/directions/json");
         urlString.append("?origin=");// from
-        urlString.append(Double.toString(sourcelat));
+        urlString.append(Double.toString(sourceLat));
         urlString.append(",");
         urlString
-                .append(Double.toString(sourcelog));
+                .append(Double.toString(sourceLog));
         urlString.append("&destination=");// to
         urlString
-                .append(Double.toString(destlat));
+                .append(Double.toString(destLat));
         urlString.append(",");
-        urlString.append(Double.toString(destlog));
+        urlString.append(Double.toString(destLog));
         urlString.append("&sensor=false&mode=walking&alternatives=true");
         urlString.append("&key=");
         urlString.append(myApiKey);
         return urlString.toString();
     }
 
-    private static void overlayPolylines(String  result, GoogleMap map) {
+    /**
+     * Overlays the polylines(representing a path) on the provided map
+     * @param result - String representation of JSON response from GoogleAPI directions query
+     * @param map   - GoogleMap onto which to overlay the polylines
+     */
+    private static void overlayPolylines(String result, GoogleMap map) {
 
         try {
-            //Tranform the string into a json object
+            //  Transform the string into a json object
             final JSONObject json = new JSONObject(result);
             JSONArray routeArray = json.getJSONArray("routes");
             JSONObject routes = routeArray.getJSONObject(0);
@@ -80,18 +91,17 @@ public class DrawRoute{
             String encodedString = overviewPolylines.getString("points");
             List<LatLng> list = decodePoly(encodedString);
 
-
-
+            //  create and draw the new polyline
             Polyline line_old = line;
 
             line = map.addPolyline(new PolylineOptions()
                             .addAll(list)
                             .width(12)
-                            .color(Color.parseColor("#05b1fb"))//Google maps blue color
+                            .color(Color.parseColor("#05b1fb")) //Google maps blue color
                             .geodesic(true)
             );
 
-            //clear the map from the previously drawn polyline
+            //  clear the map from the previously drawn polyline
             if(line_old!=null){
                 line_old.remove();
             }
@@ -102,13 +112,17 @@ public class DrawRoute{
         }
     }
 
+    /**
+     * Asynchronous task that takes care of path drawing
+     * -    parse directions JSON object
+     * -    overlay polylines on the map
+     */
     private static class drawPathAsyncTask extends AsyncTask<Void, Void, String> {
-        private ProgressDialog progressDialog;
         private GoogleMap map;
         private Context context;
 
         String url;
-        drawPathAsyncTask(String urlPass, GoogleMap map, Context context){
+        public drawPathAsyncTask(String urlPass, GoogleMap map, Context context){
 
             url = urlPass;
             this.map = map;
@@ -118,12 +132,6 @@ public class DrawRoute{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            /*
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage("Fetching route, Please wait...");
-            progressDialog.setIndeterminate(true);
-            progressDialog.show();
-            */
         }
         @Override
         protected String doInBackground(Void... params) {
@@ -134,13 +142,18 @@ public class DrawRoute{
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            //progressDialog.hide();
             if(result!=null){
                 overlayPolylines(result,map);
             }
         }
     }
 
+    /**
+     * Converts the encoded JSON string into a List of LatLng objects containing coordinates
+     * to all important change-direction points
+     * @param encoded - encoded JSON string
+     * @return List<LatLng> - list of coordinates of important change-direction points
+     */
     private static List<LatLng> decodePoly(String encoded) {
 
         List<LatLng> poly = new ArrayList<LatLng>();

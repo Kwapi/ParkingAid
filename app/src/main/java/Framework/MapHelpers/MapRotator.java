@@ -14,16 +14,22 @@ import com.google.android.gms.maps.model.CameraPosition;
 import Framework.Gps.GpsTag;
 
 /**
- * Created by Michal on 30/11/2015.
+ * MapRotator class provides functionality to rotate the provided GoogleMap object based on the direction the device is currently facing.
+
+ * @author Michal Zak
  */
 public class MapRotator implements SensorEventListener {
-    private float[] rotationMatrix = new float[16];
-    private double declination = 0;
-    private GoogleMap map;
-    private Context context;
+    private float[]             rotationMatrix = new float[16];
+    private double              declination = 0;
+    private GoogleMap           map;
+    private Context             context;
     private SensorManager       sensorManager;
 
-
+    /**
+     * Constructs a MapRotator object which is used to rotate the map based on device's sensors
+     * @param context - Android Context (Activity/Application)
+     * @param map - GoogleMap - will be linked to this MapRotator
+     */
     public MapRotator(Context context, GoogleMap map){
         this.context = context;
         this.map = map;
@@ -45,9 +51,13 @@ public class MapRotator implements SensorEventListener {
                 float bearing = (float) (Math.toDegrees(orientation[0]) + declination);
                 updateCamera(bearing);
             }
-        }
+       }
     }
 
+    /**
+     * Update (rotate) camera based on compass bearing
+     * @param bearing - compass bearing
+     */
     private void updateCamera(float bearing) {
         CameraPosition oldPos = map.getCameraPosition();
 
@@ -55,6 +65,10 @@ public class MapRotator implements SensorEventListener {
         map.moveCamera(CameraUpdateFactory.newCameraPosition(pos));
     }
 
+    /**
+     * Updates declination - used for rotating the camera - by providing currentLocation
+     * @param currentLocation - GpsTag
+     */
     public void updateDeclination(GpsTag currentLocation){
         GeomagneticField field = new GeomagneticField(
                 (float)currentLocation.getLatitude(),
@@ -70,6 +84,6 @@ public class MapRotator implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+        // do nothing
     }
 }

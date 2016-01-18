@@ -15,13 +15,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
-
+/**
+ * A class that retrieves a HTTP response from an URL and converts
+ * it into a JSON String. Used by {@link DrawRoute}
+ * @author Michal Zak
+ */
 public class JSONParser {
 
-    static InputStream is = null;
-    static JSONObject jObj = null;
-    static String json = "";
-    // constructor
+    private static InputStream  is = null;
+    private static JSONObject   jObj = null;
+    private static String       json = "";
+
+
     public JSONParser() {
     }
     public String getJSONFromUrl(String url) {

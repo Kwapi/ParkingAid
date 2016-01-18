@@ -65,17 +65,17 @@ public class GpsTag implements Serializable{
         return name +": "+longitude+","+latitude;
     }
 
-    public static boolean isSameLocation(GpsTag gpsTagOne, GpsTag gpsTagTwo){
+    public static boolean isSameLocation(GpsTag a, GpsTag b){
 
-        if(gpsTagOne == null || gpsTagTwo == null){
+        if(a == null || b == null){
             return false;
         }
 
-        if (gpsTagOne.getLatitude() != gpsTagTwo.getLatitude()) {
+        if (a.getLatitude() != b.getLatitude()) {
                 return false;
         }
 
-        if (gpsTagOne.getLongitude() != gpsTagTwo.getLongitude()) {
+        if (a.getLongitude() != b.getLongitude()) {
                 return false;
             }
 

@@ -30,6 +30,10 @@ import Framework.MapHelpers.MapRotator;
 import michal.myapplication.Utilities.AlertDialogues;
 import Framework.MapHelpers.Utils;
 
+/**
+ * NavigateToCarScreen Activity provides navigation to car functionality using auto-rotating map with two modes of operation
+ * The user can stop the Activity and delete all parking information by pressing "I FOUND MY CAR" button
+ */
 public class NavigateToCarScreen extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String TAG = NavigateToCarScreen.class.getSimpleName();
@@ -158,7 +162,6 @@ public class NavigateToCarScreen extends AppCompatActivity implements OnMapReady
             final int delay = 3000; //milliseconds
             h.postDelayed(new Runnable() {
                 public void run() {
-                    //do something
                     updateLocation();
                     h.postDelayed(this, delay);
                 }

@@ -17,10 +17,8 @@ public class LocationManager {
     
     private LocationManager(Object object){
 
-
         // initialise new gpstag tree
         storedLocations = new GpsTagTree();
-
 
         // detect os version
         int osVersion = 0;
@@ -59,6 +57,10 @@ public class LocationManager {
         storedLocations.addGpsTag(name, gt);
     }
 
+    /**
+     * Returns true if LocationManager is active and listening for location updates
+     * @return
+     */
     public boolean isReady(){
         return gm.isReady();
     }
@@ -74,6 +76,7 @@ public class LocationManager {
 
 
     /*
+    DEPRECATED
 
     public void persistStoredLocations(Context context){
         storedLocations.save(context);
