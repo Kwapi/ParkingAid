@@ -55,7 +55,7 @@ public class ParkCarScreen extends AppCompatActivity  implements OnMapReadyCallb
     private Button      parkCarButton;
 
     //  in minutes
-    private final int DEFAULT_REMINDER_TIME = 15;
+    private final int DEFAULT_REMINDER_TIME = 10;
 
     private GoogleMap           map;
     private GpsTag              currentLocation;

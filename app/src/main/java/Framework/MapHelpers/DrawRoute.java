@@ -22,6 +22,7 @@ import Framework.Gps.GpsTag;
 
 /**
  *  A class that enables route drawing functionality
+ *  @author Michal Zak
  */
 public class DrawRoute{
 

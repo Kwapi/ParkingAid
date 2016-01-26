@@ -1,16 +1,14 @@
 package michal.myapplication.Utilities;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import java.util.GregorianCalendar;
 
 /**
- *
- * @author vtv13qau
+ * Helper class used to calculate parking fee based on start and end dates.
+ * Limited to same-day parking. Three different fee time-zones:
+ * -    Peak
+ * -    Off-peak
+ * -    Other
+ * @author Michal Zak
  */
 public class FeeCalculation {
 
@@ -29,7 +27,6 @@ public class FeeCalculation {
 
             //   WEEKEND - £1 flat fee
             if( dayOfWeek == GregorianCalendar.SATURDAY || dayOfWeek == GregorianCalendar.SUNDAY){
-                System.out.println("WEEKEND");
                 return 1;
             }
 
@@ -44,23 +41,17 @@ public class FeeCalculation {
             int currentHour = startHour;
             int previousHour = -1;
 
-            System.out.println("Calculating fee from: " + startHour + ":" + startMinute + " to " + endHour + ":" + endMinute );
 
             while(currentHour < endHour || (currentHour==endHour && startMinute < endMinute)){
 
                 //   PEAK TIME - £5 per hour
                 if(isPeakTime(currentHour)){
                     fee += 5;
-                    System.out.println("Current hour:\t" + currentHour + ":" + startMinute);
-                    System.out.println("Peak Time + 5");
                 }
 
                 //   OFF-PEAK TIME - £ 1 per hour
                 if(isOffPeakTime(currentHour)){
                     fee += 1;
-
-                    System.out.println("Current hour:\t" + currentHour + ":" + startMinute);
-                    System.out.println("Off-peak Time + 1");
                 }
 
                 //   OTHER TIME - £1 flat rate
@@ -70,8 +61,6 @@ public class FeeCalculation {
                 if(isOtherTime(currentHour) && !isOtherTime(previousHour)){
                     fee += 1;
 
-                    System.out.println("Current hour:\t" + currentHour + ":" + startMinute);
-                    System.out.println("Other time + 1");
                 }
                 previousHour = currentHour;
                 currentHour ++;

@@ -12,17 +12,14 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 /**
- *
+ * Android Implementation of the GpsManager class dealing with location updates
  * @author George Hatt/Michal Zak
  */
-
-
 public class AndroidGpsManager extends GpsManager implements
         LocationListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener
     {
-
 
     private Context context;
     private boolean ready;
@@ -32,11 +29,6 @@ public class AndroidGpsManager extends GpsManager implements
 
     private static final String TAG = AndroidGpsManager.class.getSimpleName();
 
-    /**
-     * returns current gps location ion gps tag object
-     * the string passed will be the name of the gps tag
-     * @return
-     */
 
     public AndroidGpsManager(Context context){
 
@@ -44,6 +36,12 @@ public class AndroidGpsManager extends GpsManager implements
         initialise();
     }
 
+        /**
+         * Initialises location updating functionality
+         * - build GoogleAPi Client
+         * - connect it
+         * - create LocationRequest
+         */
     private void initialise(){
 
         ready = false;
@@ -51,6 +49,11 @@ public class AndroidGpsManager extends GpsManager implements
         googleApiClient.connect();
         createLocationRequest();
     }
+
+        /**
+         * Start location updates using LocationServices
+         * (requires GoogleApiClient and LocationRequest objects to be initialised)
+         */
     private void startLocationUpdates(){
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 googleApiClient, locationRequest,this);
@@ -69,6 +72,7 @@ public class AndroidGpsManager extends GpsManager implements
 
         return result;
     }
+
 
     public Location getCurrentLocation(){
 
@@ -108,6 +112,9 @@ public class AndroidGpsManager extends GpsManager implements
         ready = false;
     }
 
+        /**
+         * Builds Google Api Client required for location updates
+          */
     private synchronized void buildGoogleApiClient(){
         googleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(this)
@@ -116,6 +123,10 @@ public class AndroidGpsManager extends GpsManager implements
                 .build();
     }
 
+        /**
+         * Creates a LocationRequest object and sets the interval to 5 seconds, fastest interval to 1 second
+         * guarantees high accuracy readings
+         */
     private void createLocationRequest(){
         locationRequest = new LocationRequest();
         locationRequest.setInterval(5000);
@@ -123,6 +134,12 @@ public class AndroidGpsManager extends GpsManager implements
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+        /**
+         * Returns the status of the AndroidGpsManager
+         * If it's active and at least one location updates has been performed, the manager is considered ready
+         *
+         * @return ready - boolean
+         */
     public boolean isReady(){
         return ready;
     }

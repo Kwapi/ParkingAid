@@ -243,6 +243,29 @@ public class ParkedCar implements Serializable{
         FileIO.deleteFile(context, FILE_NAME);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ParkedCar)) {
+            return false;
+        }
+
+        ParkedCar that = (ParkedCar) other;
+
+        boolean parkTimeEqual, notesEqual,openModeEqual,parkingLocationEqual,parkEndTimeEqual;
+
+
+        parkTimeEqual = this.parkTime.getTimeInMillis() == that.getParkTime().getTimeInMillis();
+        parkEndTimeEqual = this.endParkTime.getTimeInMillis() == that.getEndParkTime().getTimeInMillis();
+        notesEqual = this.notes.equals(that.getNotes());
+        openModeEqual = this.openDayMode == that.isOpenDayMode();
+        parkingLocationEqual = (this.parkingLocation.getLatitude() == that.getLocation().getLatitude())
+                                &&
+                                (this.parkingLocation.getLongitude() == that.getLocation().getLongitude());
+
+        return parkTimeEqual && parkEndTimeEqual && notesEqual && openModeEqual && parkingLocationEqual;
+
+
+    }
 
 }
 

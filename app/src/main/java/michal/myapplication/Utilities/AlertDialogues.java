@@ -10,7 +10,11 @@ import com.google.android.gms.maps.GoogleMap;
 import michal.myapplication.ParkCarScreen;
 
 /**
- * Created by Michal on 19/12/2015.
+ * Helper class providing functionality to create various AlertDialogs notifying user of
+ * incorrect input, missing input or lack of ParkedCar object persisted.
+ *
+ * These AlertDialogs serve as a visual feedback for the user.
+ * @author Michal Zak
  */
 public class AlertDialogues {
 
